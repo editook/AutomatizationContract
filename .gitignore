@@ -1,0 +1,21 @@
+# Dependency directories
+node_modules/
+vendor/
+
+# OS files
+Thumbs.db
+.DS_Store
+
+# IDEs
+.vscode/
+.idea/
+
+# Temporary files
+*.log
+*.tmp
+
+# Environment / Config (Sensitive data)
+config/configs.php
+
+# Examples/Output data
+example/
