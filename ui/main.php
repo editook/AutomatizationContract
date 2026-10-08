@@ -31,22 +31,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $step === 'review') {
         }
     </style>
 </head>
-<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
-    <div class="bg-white p-8 rounded-lg shadow-lg max-w-2xl w-full">
-        <h1 class="text-2xl font-bold text-center text-gray-800 mb-6"><?= WEB_TITLE ?></h1>
+<body class="bg-gray-900 min-h-screen flex items-center justify-center p-4 text-gray-100">
+    <div class="bg-gray-800 p-8 rounded-lg shadow-2xl max-w-2xl w-full border border-gray-700">
+        <h1 class="text-2xl font-bold text-center text-white mb-6"><?= WEB_TITLE ?></h1>
         
         <?php if ($step === 'upload'): ?>
             <form action="process.php" method="POST" enctype="multipart/form-data" class="space-y-6">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="space-y-2">
-                        <label class="block text-sm font-medium text-gray-700">Archivo MSPI (.xls)</label>
+                        <label class="block text-sm font-medium text-gray-300">Archivo MSPI (.xls)</label>
                         <input type="file" name="mspi_file" accept=".xls,.xlsx" required 
-                               class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                                class="block w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-900 file:text-blue-200 hover:file:bg-blue-800">
                     </div>
                     <div class="space-y-2">
-                        <label class="block text-sm font-medium text-gray-700">Archivo Packing List (.xls)</label>
+                        <label class="block text-sm font-medium text-gray-300">Archivo Packing List (.xls)</label>
                         <input type="file" name="packing_file" accept=".xls,.xlsx" required 
-                               class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                                class="block w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-900 file:text-blue-200 hover:file:bg-blue-800">
                     </div>
                 </div>
                 <div class="flex justify-center pt-4">
@@ -57,18 +57,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $step === 'review') {
             </form>
         <?php elseif ($step === 'review'): ?>
             <form action="main.php?step=review" method="POST" class="space-y-4">
-                <h2 class="text-xl font-semibold text-gray-700 mb-4">Revisar Datos Extraídos</h2>
+                <h2 class="text-xl font-semibold text-gray-200 mb-4">Revisar Datos Extraídos</h2>
                 <div class="grid grid-cols-1 gap-4">
                     <?php foreach ($data as $key => $value): ?>
                         <div class="flex flex-col space-y-1">
-                            <label class="text-xs font-bold text-gray-500 uppercase"><?= str_replace('_', ' ', $key) ?></label>
+                            <label class="text-xs font-bold text-gray-400 uppercase"><?= str_replace('_', ' ', $key) ?></label>
                             <input type="text" name="contract_data[<?= $key ?>]" value="<?= htmlspecialchars($value) ?>" 
-                                   class="border border-gray-300 p-2 rounded focus:ring-2 focus:ring-blue-500 outline-none">
+                                    class="bg-gray-700 border border-gray-600 text-white p-2 rounded focus:ring-2 focus:ring-blue-500 outline-none">
                         </div>
                     <?php endforeach; ?>
                 </div>
                 <div class="flex justify-between pt-6">
-                    <a href="main.php?step=upload" class="text-blue-600 hover:underline">Volver a cargar</a>
+                    <a href="main.php?step=upload" class="text-blue-400 hover:underline">Volver a cargar</a>
                     <button type="submit" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded-lg transition duration-300">
                         Confirmar y Previsualizar
                     </button>
@@ -76,5 +76,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $step === 'review') {
             </form>
         <?php endif; ?>
     </div>
+
 </body>
 </html>
