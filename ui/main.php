@@ -17,6 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $step === 'review') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= WEB_TITLE ?> - Cargar Archivos</title>
+    <link rel="icon" href="../assets/img/logo.png" type="image/x-icon" />
     <link rel="stylesheet" href="../assets/css/tailwind.css">
     <style>
         .drop-zone {
