@@ -25,12 +25,22 @@ if (empty($data)) {
     </script>";
     exit;
 }
+$page_email ='Mia@ledmosun.com';
+$page_tel ='+86 18237627197';
 $page = [
     'header' => 'Jiangmen Mosun Optoelectronics Technology Co., Ltd',
-    'address' => 'Add: Building 2, Smart Manufacturing Port, 370 Lianhai Road, Jianghai District, Jiangmen City, Guangdong Province',
-    'contact' => 'Postal:529000    Contact :  Mia@ledmosun.com   Tel：  +86 18237627197    Web: www.ledmosun.com',
+    'address' => 'Add.: Building 2, Smart Manufacturing Port, 370 Lianhai Road, Jianghai District, Jiangmen City, Guangdong Province',
+    'contact' => 'Postal:529000    Contact :  '.$page_email.'   Tel：  '.$page_tel.'    Web: www.ledmosun.com',
     'contract' => $data['contract'],
+    'email' => $page_email,
+    'tel' => $page_tel,
 ];
+$data['customer_name'] = 'Led National LLC';
+$data['customer_address'] = '1309 Coffeen Avenue, Suite 1200, Sheridan, WY 82801';
+$data['customer_tel'] = '(1)3072284125';
+$data['customer_email'] = 'contact@lednationllc.com';
+$data['brand'] = 'Lumens';
+
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -47,7 +57,7 @@ $page = [
             min-height: auto;
             background: white;
             color: black;
-            padding-bottom: 20mm;
+            padding-bottom: 10mm;
             padding-left: 20mm;
             padding-right: 20mm;
             margin: 0 auto;
@@ -66,7 +76,6 @@ $page = [
 
         .highlight {
             background-color: yellow;
-            padding: 0 4px;
         }
 
         .page-break {
@@ -173,7 +182,7 @@ $page = [
                     <td class="print-content-cell">
                         <div class="contract-page">
 
-                            <div class="space-y-6 text-sm">
+                            <div class="space-y-6 text-sm pt-6">
                                 <table class="w-full border-collapse border border-black">
                                     <thead>
                                         <tr>
@@ -184,7 +193,7 @@ $page = [
                                     </thead>
                                     <tbody>
                                         <tr>
-                                            <td class="border border-black font-bold pl-1">Contract No: <span class="font-normal"><?= $data['contract'] ?></span></td>
+                                            <td class="border border-black font-bold pl-1">Contract No: <span class="font-normal highlight"><?= $data['contract'] ?></span></td>
                                             <td class="border border-black font-bold pl-1">Date: <span class="font-normal"><?= $data['order_date'] ?></span></td>
                                         </tr>
                                         <tr>
@@ -196,13 +205,13 @@ $page = [
                                             <td class="border border-black pl-1"><strong>Address:</strong> <span class="font-normal"><?= $page['address'] ?></span></td>
                                         </tr>
                                         <tr>
-                                            <td class="border border-black pl-1"><strong>Contact:</strong> <span class="font-normal"><?= $data['customer_tel'] ?></span></td>
-                                            <td class="border border-black pl-1"><strong>Tel:</strong> <span class="font-normal">+86 18237627197</span></td>
+                                            <td class="border border-black pl-1"><strong>Contact:</strong> <span class="font-normal"><?= $data['customer_tel'] ?></span>
+                                            <br><strong>Email:</strong> <span class="font-normal"><?= $data['customer_email'] ?></span>
+                                            </td>
+                                            <td class="border border-black pl-1"><strong>Tel:</strong> <span class="font-normal"><?= $page['tel'] ?></span>
+                                        <br><strong>Email:</strong> <span class="font-normal"><?= $page['email']?></span></td>
                                         </tr>
-                                        <tr>
-                                            <td class="border border-black pl-1"><strong>Email:</strong> <span class="font-normal"><?= $data['customer_email'] ?></span></td>
-                                            <td class="border border-black pl-1"><strong>Email:</strong> <span class="font-normal">Mia@ledmosun.com</span></td>
-                                        </tr>
+                                        
                                         <tr>
                                             <td colspan="2" class="border border-black pl-1 italic">
                                                 This agreement is made between the buyer and the seller under the following terms and conditions:
@@ -255,7 +264,7 @@ $page = [
                                             <td colspan="4" class=""></td>
                                             <td class="text-center font-bold">120</td>
                                             <td class="text-center font-bold">Total Amount</td>
-                                            <td class="text-center font-bold highlight"><?= $data['total_amount'] ?? '3,184.40' ?></td>
+                                            <td class="text-center font-bold highlight"><?= $data['total_amount'] ?></td>
                                         </tr>
                                     </tfoot>
                                 </table>
@@ -269,10 +278,10 @@ $page = [
                                 <div class="space-y-3">
                                     <p class="font-bold">Clause One – (Parties)</p>
                                     <p class="text-justify">
-                                        <span class="highlight"><?= $page['header'] ?></span>, a limited liability company organized and existing under the laws of China, with its registered office at <span class="highlight"><?= $page['address'] ?></span>, email <span class="highlight">Mia@ledmosun.com</span>, and phone number <span class="highlight">+86 18237627197</span>. Hereinafter referred to as the <strong class="uppercase">“SELLER.”</strong>
+                                        <?= $page['header'] ?>, a limited liability company organized and existing under the laws of China, with its registered office at <?= $page['address'] ?>, email <?= $page['email']?>, and phone number <?= $page['tel'] ?>. Hereinafter referred to as the <strong class="uppercase">“SELLER.”</strong>
                                     </p>
                                     <p class="text-justify">
-                                        <span class="highlight"><?= $data['customer_name'] ?? 'Led Nation LLC' ?></span>, a limited liability company organized and existing under the laws of the United States of America, with its registered office at <span class="highlight"><?= $data['customer_address'] ?? '1309 Coffeen Avenue, Suite 1200, Sheridan, WY 82801' ?></span>, email <span class="highlight">contact@lednationllc.com</span>, and phone number <span class="highlight"><?= $data['customer_tel'] ?? '+1 (307) 228 4125' ?></span>. Hereinafter referred to as the <strong class="uppercase">“BUYER.”</strong>
+                                        <span class="highlight"><?= $data['customer_name']?></span>, a limited liability company organized and existing under the laws of the United States of America, with its registered office at <span class="highlight"><?= $data['customer_address'] ?></span>, email <?= $data['customer_email'] ?>, and phone number <?= $data['customer_tel'] ?>. Hereinafter referred to as the <strong class="uppercase">“BUYER.”</strong>
                                     </p>
                                 </div>
                             </div>
@@ -284,7 +293,7 @@ $page = [
                                     The Seller sells to the Buyer the items described in Clause Three, which correspond to:
                                 </p>
                                 <ul class="list-none pl-4 space-y-1">
-                                    <li>1) Proforma No. <span class="highlight"><?= $data['contract'] ?></span>, dated <span class="highlight"><?= $data['order_date_proforma'] ?? '' ?></span></li>
+                                    <li>1) Proforma No. <span class="highlight"><?= $data['contract'] ?></span>, dated <span class="highlight"><?= $data['order_date_proforma'] ?></span></li>
                                     <li>2) Commercial Invoice No. <span class="highlight"><?= $data['contract'] ?></span>, dated <span class="highlight"><?= $data['order_date']  ?></span></li>
                                 </ul>
                             </div>
@@ -316,7 +325,7 @@ $page = [
                             <div class="text-sm space-y-6">
                                 <p class="font-bold">Clause Four – (Price and Forms of Payment)</p>
                                 <p class="text-justify">
-                                    The price agreed upon between the Seller and the Buyer for the imported item shall be <span class="highlight"><?= $data['total_amount'] ?? '$3,184.40' ?></span> (Three thousand one hundred eighty-four and 40/100 US Dollars).
+                                    The price agreed upon between the Seller and the Buyer for the imported item shall be <span class="highlight"><?= $data['total_amount'] ?></span> (<span class="highlight"><?= $data['total_amount_letters']?></span>).
                                 </p>
                                 <p class="text-justify">
                                     The total contract price shall be paid under mixed payment terms, consisting of advance and deferred payments, as follows:
@@ -349,19 +358,19 @@ $page = [
                                             <strong class="w-40">Beneficiary:</strong> <span class="highlight"><?= $page['header'] ?></span>
                                         </div>
                                         <div class="flex">
-                                            <strong class="w-40">Account No:</strong> <span class="highlight"><?= $data['bank_account'] ?? '79969000988032' ?></span>
+                                            <strong class="w-40">Account No:</strong> <span class="highlight"><?= $data['bank_account'] ?></span>
                                         </div>
                                         <div class="flex">
                                             <strong class="w-40">Country:</strong> <span class="highlight">Hong Kong (China)</span>
                                         </div>
                                         <div class="flex">
-                                            <strong class="w-40">Beneficiary Bank:</strong> <span class="highlight"><?= $data['bank_name'] ?? 'DBS Bank (Hong Kong) Limited' ?></span>
+                                            <strong class="w-40">Beneficiary Bank:</strong> <span class="highlight"><?= $data['bank_name'] ?></span>
                                         </div>
                                         <div class="flex">
-                                            <strong class="w-40">Swift Code:</strong> <span class="highlight"><?= $data['bank_swift'] ?? 'DHBKHKHH' ?></span>
+                                            <strong class="w-40">Swift Code:</strong> <span class="highlight"><?= $data['bank_swift'] ?></span>
                                         </div>
                                         <div class="flex">
-                                            <strong class="w-40">Bank Address:</strong> <span class="highlight"><?= $data['bank_address'] ?? '11th Floor, The Center, 99 Queen\'s Road Central, Central, Hong Kong' ?></span>
+                                            <strong class="w-40">Bank Address:</strong> <span class="highlight"><?= $data['bank_address'] ?></span>
                                         </div>
                                     </div>
                                 </div>
@@ -428,7 +437,7 @@ $page = [
                                     <li>5) Other documents as required</li>
                                 </ul>
                                 <p class="text-justify mt-4">
-                                    The same documentation shall be delivered to the buyer at the address: <span class="highlight"><?= $data['customer_address'] ?? '1309 Coffeen Avenue, Suite 1200, Sheridan, WY 82801' ?></span> or to the corresponding email address, in order to have proof of delivery by the seller, pursuant to Article 30 of the CISG: “The seller must deliver the goods, transfer property in them, and deliver any documents relating to them in the manner and form required by the contract and this Convention.”
+                                    The same documentation shall be delivered to the buyer at the address: <span class="highlight"><?= $data['customer_address'] ?></span> or to the corresponding email address, in order to have proof of delivery by the seller, pursuant to Article 30 of the CISG: “The seller must deliver the goods, transfer property in them, and deliver any documents relating to them in the manner and form required by the contract and this Convention.”
                                 </p>
                             </div>
                         </div>
