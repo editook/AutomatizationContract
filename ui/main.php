@@ -34,7 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $step === 'review') {
 </head>
 <body class="bg-gray-900 min-h-screen flex items-center justify-center p-4 text-gray-100">
     <div class="bg-gray-800 p-8 rounded-lg shadow-2xl max-w-2xl w-full border border-gray-700">
-        <h1 class="text-2xl font-bold text-center text-white mb-6"><?= WEB_TITLE ?></h1>
+        <h1 class="text-2xl font-bold text-center text-white mb-6">MOSUN LED TECNOLOGY</h1>
         
         <?php if ($step === 'upload'): ?>
             <form action="process.php" method="POST" enctype="multipart/form-data" class="space-y-6">
@@ -58,7 +58,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $step === 'review') {
             </form>
         <?php elseif ($step === 'review'): ?>
             <form action="main.php?step=review" method="POST" class="space-y-4">
-                <h2 class="text-xl font-semibold text-gray-200 mb-4">Revisar Datos Extraídos</h2>
+                <h2 class="text-xl font-semibold text-gray-200 mb-4">Datos Extraídos</h2>
                 <div class="grid grid-cols-1 gap-4">
                     <?php foreach ($data as $key => $value): ?>
                         <div class="flex flex-col space-y-1">
