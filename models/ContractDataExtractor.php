@@ -47,7 +47,7 @@ class ContractDataExtractor {
         $data = $sheet->toArray();
 
         return [
-            'contract' => $this->clean($sheet->getCell('O5')->getValue() ?? ''),
+            'contract' => 'C-'.$this->clean($sheet->getCell('O5')->getValue() ?? ''),
         ];
     }
 
