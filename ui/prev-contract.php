@@ -1,7 +1,18 @@
 <?php
 include_once('../config/configs.php');
 session_start();
-$data = $_SESSION['contract_data'] ?? [];
+
+function getDataRender($dataRender){
+    return [];//completar la funcion ejemplo de salida:
+    // $data['address'] 
+    // $data['contract'] etc
+}
+
+$data_collection = $_SESSION['collection_data'] ?? [];
+
+
+$data = getDataRender($data_collection);
+
 
 function renderHeader($page)
 {
@@ -10,7 +21,7 @@ function renderHeader($page)
         <img src="../assets/img/log-company.png" class="h-auto w-40" alt="Company Logo">
         <div class="text-right">
             <h1 class="text-lg font-bold leading-tight text-[27px] text-center"><?= $page['header'] ?></h1>
-            <p class="text-sm text-center mt-8"><?= $page['address'] ?></p>
+            <p class="text-sm text-center mt-8">Add.:<?= $page['address'] ?></p>
         </div>
     </div>
     <h3 class="print-header-force print-contract-number mb-10 font-bold">Contract No: <span class="font-normal"><?= $page['contract'] ?></span></h3>
@@ -25,21 +36,14 @@ if (empty($data)) {
     </script>";
     exit;
 }
-$page_email ='Mia@ledmosun.com';
-$page_tel ='+86 18237627197';
-$page = [
-    'header' => 'Jiangmen Mosun Optoelectronics Technology Co., Ltd',
-    'address' => 'Add.: Building 2, Smart Manufacturing Port, 370 Lianhai Road, Jianghai District, Jiangmen City, Guangdong Province',
-    'contact' => 'Postal:529000    Contact :  '.$page_email.'   Tel：  '.$page_tel.'    Web: www.ledmosun.com',
-    'contract' => $data['contract'],
-    'email' => $page_email,
-    'tel' => $page_tel,
+
+//completar data
+$pageRender = [
+    'header' => $data['..'],
+    'address' => $data['..'],
+    'contract' => $data['..']
 ];
-$data['customer_name'] = 'Led National LLC';
-$data['customer_address'] = '1309 Coffeen Avenue, Suite 1200, Sheridan, WY 82801';
-$data['customer_tel'] = '(1)3072284125';
-$data['customer_email'] = 'contact@lednationllc.com';
-$data['brand'] = 'Lumens';
+
 
 ?>
 <!DOCTYPE html>
@@ -174,7 +178,7 @@ $data['brand'] = 'Lumens';
         <table class="print-document">
             <thead>
                 <tr>
-                    <td class="print-header-cell"><?php renderHeader($page); ?></td>
+                    <td class="print-header-cell"><?php renderHeader($pageRender); ?></td>
                 </tr>
             </thead>
             <tbody>
@@ -198,18 +202,18 @@ $data['brand'] = 'Lumens';
                                         </tr>
                                         <tr>
                                             <td class="border border-black pl-1"><strong>Buyer:</strong> <span class="font-normal"><?= $data['customer_name'] ?></span></td>
-                                            <td class="border border-black pl-1"><strong>Seller:</strong> <span class="font-normal"><?= $page['header'] ?></span></td>
+                                            <td class="border border-black pl-1"><strong>Seller:</strong> <span class="font-normal"><?= $data['header'] ?></span></td>
                                         </tr>
                                         <tr>
                                             <td class="border border-black pl-1"><strong>Address:</strong> <span class="font-normal"><?= $data['customer_address'] ?></span></td>
-                                            <td class="border border-black pl-1"><strong>Address:</strong> <span class="font-normal"><?= $page['address'] ?></span></td>
+                                            <td class="border border-black pl-1"><strong>Address:</strong> <span class="font-normal"><?= $data['address'] ?></span></td>
                                         </tr>
                                         <tr>
                                             <td class="border border-black pl-1"><strong>Contact:</strong> <span class="font-normal"><?= $data['customer_tel'] ?></span>
                                             <br><strong>Email:</strong> <span class="font-normal"><?= $data['customer_email'] ?></span>
                                             </td>
-                                            <td class="border border-black pl-1"><strong>Tel:</strong> <span class="font-normal"><?= $page['tel'] ?></span>
-                                        <br><strong>Email:</strong> <span class="font-normal"><?= $page['email']?></span></td>
+                                            <td class="border border-black pl-1"><strong>Tel:</strong> <span class="font-normal"><?= $data['tel'] ?></span>
+                                        <br><strong>Email:</strong> <span class="font-normal"><?= $data['email']?></span></td>
                                         </tr>
                                         
                                         <tr>
@@ -278,7 +282,7 @@ $data['brand'] = 'Lumens';
                                 <div class="space-y-3">
                                     <p class="font-bold">Clause One – (Parties)</p>
                                     <p class="text-justify">
-                                        <?= $page['header'] ?>, a limited liability company organized and existing under the laws of China, with its registered office at <?= $page['address'] ?>, email <?= $page['email']?>, and phone number <?= $page['tel'] ?>. Hereinafter referred to as the <strong class="uppercase">“SELLER.”</strong>
+                                        <?= $data['header'] ?>, a limited liability company organized and existing under the laws of China, with its registered office at <?= $data['address'] ?>, email <?= $data['email']?>, and phone number <?= $data['tel'] ?>. Hereinafter referred to as the <strong class="uppercase">“SELLER.”</strong>
                                     </p>
                                     <p class="text-justify">
                                         <span class="highlight"><?= $data['customer_name']?></span>, a limited liability company organized and existing under the laws of the United States of America, with its registered office at <span class="highlight"><?= $data['customer_address'] ?></span>, email <?= $data['customer_email'] ?>, and phone number <?= $data['customer_tel'] ?>. Hereinafter referred to as the <strong class="uppercase">“BUYER.”</strong>
@@ -355,7 +359,7 @@ $data['brand'] = 'Lumens';
                                     <div class="text-let font-bold uppercase mb-2">BENEFICIARY BANKING INFORMATION: (SELLER)</div>
                                     <div class="border border-black pt-2 pb-2 pl-15 space-y-2 text-sm">
                                         <div class="flex">
-                                            <strong class="w-40">Beneficiary:</strong> <span class="highlight"><?= $page['header'] ?></span>
+                                            <strong class="w-40">Beneficiary:</strong> <span class="highlight"><?= $data['header'] ?></span>
                                         </div>
                                         <div class="flex">
                                             <strong class="w-40">Account No:</strong> <span class="highlight"><?= $data['bank_account'] ?></span>

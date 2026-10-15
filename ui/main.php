@@ -3,10 +3,24 @@ include_once('../config/configs.php');
 session_start();
 
 $step = $_GET['step'] ?? 'upload';
-$data = $_SESSION['contract_data'] ?? [];
+$data = $_SESSION['collection_data'] ?? [];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && $step === 'review') {
-    $_SESSION['contract_data'] = $_POST['contract_data'];
+    $submittedData = $_POST['collection_data'] ?? [];
+    $currentData = $_SESSION['collection_data'] ?? [];
+
+    foreach ($submittedData as $key => $value) {
+        $currentField = $currentData[$key] ?? null;
+
+        if (is_array($currentField) && array_key_exists('value', $currentField)) {
+            $currentField['value'] = is_scalar($value) ? (string) $value : '';
+            $currentData[$key] = $currentField;
+        } elseif (is_scalar($value)) {
+            $currentData[$key] = $value;
+        }
+    }
+
+    $_SESSION['collection_data'] = $currentData;
     header('Location: prev-contract.php');
     exit;
 }
@@ -61,9 +75,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $step === 'review') {
                 <h2 class="text-xl font-semibold text-gray-200 mb-4">Datos Extraídos</h2>
                 <div class="grid grid-cols-1 gap-4">
                     <?php foreach ($data as $key => $value): ?>
+                        <?php
+                            $isStructuredField = is_array($value) && array_key_exists('value', $value);
+                            if ($isStructuredField && !($value['visible'] ?? true)) {
+                                continue;
+                            }
+
+                            $fieldLabel = $isStructuredField
+                                ? ($value['name_show'] ?? str_replace('_', ' ', $key))
+                                : str_replace('_', ' ', $key);
+                            $fieldValue = $isStructuredField ? ($value['value'] ?? '') : $value;
+                            if (!is_scalar($fieldValue)) {
+                                $fieldValue = '';
+                            }
+                        ?>
                         <div class="flex flex-col space-y-1">
-                            <label class="text-xs font-bold text-gray-400 uppercase"><?= str_replace('_', ' ', $key) ?></label>
-                            <input type="text" name="contract_data[<?= $key ?>]" value="<?= htmlspecialchars($value) ?>" 
+                            <label class="text-xs font-bold text-gray-400 uppercase"><?= htmlspecialchars((string) $fieldLabel, ENT_QUOTES, 'UTF-8') ?></label>
+                            <input type="text" name="contract_data[<?= htmlspecialchars((string) $key, ENT_QUOTES, 'UTF-8') ?>]" value="<?= htmlspecialchars((string) $fieldValue, ENT_QUOTES, 'UTF-8') ?>"
                                     class="bg-gray-700 border border-gray-600 text-white p-2 rounded focus:ring-2 focus:ring-blue-500 outline-none">
                         </div>
                     <?php endforeach; ?>

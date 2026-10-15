@@ -18,7 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $extractor = new ContractDataExtractor();
         $extractedData = $extractor->extract($mspi_file, $packing_file);
 
-        $_SESSION['contract_data'] = $extractedData;
+        $_SESSION['collection_data'] = $extractedData;
         header('Location: main.php?step=review');
         exit;
 
