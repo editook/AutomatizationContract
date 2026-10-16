@@ -50,6 +50,12 @@ class ContractDataExtractor
                 'name_show' => 'Correo',
                 'visible' => true,
             ],
+            'contract' => $packingData['contract'],
+            'order_date_proforma' => [
+                'value' => date("d-m-Y"),
+                'name_show' => 'FECHA DE PROFORMA',
+                'visible' => true,
+            ],
         ];
 
         $page_email = 'Mia@ledmosun.com';
@@ -86,7 +92,6 @@ class ContractDataExtractor
             ['titulo' => 'Empresa Contratante', 'items' => $solicitante],
             ['titulo' => 'Empresa Contratada', 'items' => $solicitado],
             ['titulo' => 'MSDI', 'items' => $mspiData],
-            ['titulo' => 'Lista de Paquetes', 'items' => $packingData]
         ];
 
         return ['response'=>$response,'items'=>$itemsTable];
@@ -95,6 +100,8 @@ class ContractDataExtractor
     private function getCreateItems(int $quantity)
     {
         $item = [
+            'item_name'=>'LED LUMINAIRE',
+            'hc_code'=>'9405',
             'brand' => 'Lumens',
             'material' => 'Aluminum',
             'condition' => 'New',
@@ -125,6 +132,8 @@ class ContractDataExtractor
             $items[] = [
                 'model' => $invoiceItems[$index],
                 'brand' => $inputItem['brand'],
+                'hc_code' => $inputItem['hc_code'],
+                'item_name' => $inputItem['item_name'],
                 'material' => $inputItem['material'],
                 'condition' => $inputItem['condition'],
                 'price' => $mspiItem['price'],
@@ -307,39 +316,16 @@ class ContractDataExtractor
         $spreadsheet = IOFactory::load($path);
         $sheet = $spreadsheet->getActiveSheet();
         $data = $sheet->toArray();
-
         $rawDate = $this->clean($data[11][1] ?? '');
         $orderDate = $rawDate ? date("d-m-Y", strtotime($rawDate)) : ''; //B12
-
-        $total_amount = '3184.40';
-        $amountInWords = amountToEnglishWords($total_amount);
+        //$orderDate = Date::excelToDateTimeObject((float) $data[11][1])->format('d-m-Y');
         return [
             'order_date' => [
                 'value' => $orderDate,
                 'name_show' => 'Fecha Contrato',
                 'visible' => true,
             ],
-            'cartons' => [
-                'value' => '120', //package list
-                'name_show' => 'Cartones',
-                'visible' => true,
-            ],
-            'gross_weight' => [
-                'value' => '255.80', //list empaque package list
-                'name_show' => 'Peso Bruto',
-                'visible' => true,
-            ],
-            'total_amount' => [
-                'value' => $total_amount, //MSPI
-                'name_show' => 'Monto Total',
-                'visible' => true,
-            ],
-            'total_amount_letters' => [
-                'value' => $amountInWords,
-                'name_show' => 'Monto Total en Texto',
-                'visible' => true,
-            ],
-
+            
             'account_name' => [
                 'value' => $this->findValueRightOfLabel($sheet, 'Account name'),
                 'name_show' => 'Nombre Banco',
@@ -358,6 +344,11 @@ class ContractDataExtractor
             'bank_name' => [
                 'value' => $this->findValueRightOfLabel($sheet, 'Bank Name'),
                 'name_show' => 'Nombre Banco',
+                'visible' => true,
+            ],
+            'bank_swift' => [
+                'value' => $this->findValueRightOfLabel($sheet, 'SWIFT'),
+                'name_show' => 'Swift Code',
                 'visible' => true,
             ],
             'bank_address' => [
@@ -384,17 +375,11 @@ class ContractDataExtractor
     {
         $spreadsheet = IOFactory::load($path);
         $sheet = $spreadsheet->getActiveSheet();
-        $data = $sheet->toArray();
 
         return [
-            'order_date_proforma' => [
-                'value' => date("d-m-Y"),
-                'name_show' => 'FECHA DE PROFORMA',
-                'visible' => true,
-            ],
             'contract' => [
                 'value' => 'C-' . $this->clean($sheet->getCell('O5')->getValue() ?? ''),
-                'name_show' => 'No CONTRATO',
+                'name_show' => 'NUM. CONTRATO',
                 'visible' => true,
             ],
         ];

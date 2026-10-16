@@ -20,7 +20,7 @@ function amountToEnglishWords(string $amount): string
     $wholeNumber = (int) $wholePart;
     $cents = str_pad($fractionPart, 2, '0');
     $currency = $wholeNumber === 1 ? 'US Dollar' : 'US Dollars';
-
+    
     return ucfirst(modelConfigurationNumberToWords($wholeNumber))
         . ' and ' . $cents . '/100 ' . $currency;
 }

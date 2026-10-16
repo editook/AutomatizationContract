@@ -25,7 +25,7 @@ function getDataRender(array $dataRender): array
 $data_collection = $_SESSION['collection_data'] ?? [];
 $items_collection = $_SESSION['collection_table'] ?? [];
 
-
+//echo json_encode($data_collection);
 $data = getDataRender($data_collection);
 
 
@@ -281,9 +281,9 @@ $pageRender = [
                                     <tfoot>
                                         <tr>
                                             <td colspan="4" class=""></td>
-                                            <td class="text-center font-bold">120</td>
+                                            <td class="text-center font-bold"><?= $data['cartonesTotal']?></td>
                                             <td class="text-center font-bold">Total Amount</td>
-                                            <td class="text-center font-bold highlight"><?= $data['total_amount'] ?></td>
+                                            <td class="text-center font-bold highlight">$<?= number_format($data['total'], 2, '.', ',') ?></td>
                                         </tr>
                                     </tfoot>
                                 </table>
@@ -297,10 +297,10 @@ $pageRender = [
                                 <div class="space-y-3">
                                     <p class="font-bold">Clause One – (Parties)</p>
                                     <p class="text-justify">
-                                        <?= $data['header'] ?>, a limited liability company organized and existing under the laws of China, with its registered office at <?= $data['address'] ?>, email <?= $data['email']?>, and phone number <?= $data['tel'] ?>. Hereinafter referred to as the <strong class="uppercase">“SELLER.”</strong>
+                                        <span class="highlight"><?= $data['header'] ?></span>, a limited liability company organized and existing under the laws of China, with its registered office at <span class="highlight"><?= $data['address'] ?></span>, email <span class="highlight"><?= $data['email']?></span>, and phone number <span class="highlight"><?= $data['tel'] ?></span>. Hereinafter referred to as the <strong class="uppercase">“SELLER.”</strong>
                                     </p>
                                     <p class="text-justify">
-                                        <span class="highlight"><?= $data['customer_name']?></span>, a limited liability company organized and existing under the laws of the United States of America, with its registered office at <span class="highlight"><?= $data['customer_address'] ?></span>, email <?= $data['customer_email'] ?>, and phone number <?= $data['customer_tel'] ?>. Hereinafter referred to as the <strong class="uppercase">“BUYER.”</strong>
+                                        <span class="highlight"><?= $data['customer_name']?></span>, a limited liability company organized and existing under the laws of the United States of America, with its registered office at <span class="highlight"><?= $data['customer_address'] ?></span>, email <span class="highlight"><?= $data['customer_email'] ?></span>, and phone number <span class="highlight"><?= $data['customer_tel'] ?></span>. Hereinafter referred to as the <strong class="uppercase">“BUYER.”</strong>
                                     </p>
                                 </div>
                             </div>
@@ -325,17 +325,20 @@ $pageRender = [
                                     The goods to be imported, which correspond to the documentation referenced in Clause Two, are described as follows:
                                 </p>
                                 <ul class="list-none pl-4 space-y-1">
-                                    <li>- <span class="highlight"><?= $data['cartons'] ?></span> cartons.</li>
-                                    <li>- Gross weight: <span class="highlight"><?= $data['gross_weight'] ?></span> kg.</li>
+                                    <li>- <span class="highlight"><?= $data['cartonesTotal'] ?></span> cartons.</li>
+                                    <li>- Gross weight: <span class="highlight"><?= $data['gross_weightTotal'] ?></span> kg.</li>
                                     <li>- Item Brand:
                                         <div class="pl-4">a. Lumens</div>
-                                        <div class="pl-4">b. Led Luminaire</div>
+                                        
+                                    </li>
+                                    <li>- Items:
+                                        <div class="pl-4">a. Led Luminaire</div>
                                     </li>
                                     <li>- Model:
                                         <div class="pl-4">a. LC110030</div>
                                         <div class="pl-4">b. APB-150W</div>
                                     </li>
-                                    <li>- Items:</li>
+                                    
                                 </ul>
                             </div>
                         </div>
@@ -344,7 +347,7 @@ $pageRender = [
                             <div class="text-sm space-y-6">
                                 <p class="font-bold">Clause Four – (Price and Forms of Payment)</p>
                                 <p class="text-justify">
-                                    The price agreed upon between the Seller and the Buyer for the imported item shall be <span class="highlight"><?= $data['total_amount'] ?></span> (<span class="highlight"><?= $data['total_amount_letters']?></span>).
+                                    The price agreed upon between the Seller and the Buyer for the imported item shall be <span class="highlight">$<?= $data['total'] ?></span> (<span class="highlight"><?= $data['amountInWords']?></span>).
                                 </p>
                                 <p class="text-justify">
                                     The total contract price shall be paid under mixed payment terms, consisting of advance and deferred payments, as follows:

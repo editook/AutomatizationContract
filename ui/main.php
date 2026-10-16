@@ -1,6 +1,7 @@
 <?php
 include_once('../config/configs.php');
 session_start();
+require_once __DIR__ . '/../models/model_configuration.php';
 
 $step = $_GET['step'] ?? 'upload';
 $collection = $_SESSION['collection_data'] ?? [];
@@ -91,15 +92,51 @@ foreach ($currentTable as $item) {
         $gross_weightTotal += (float) $item['gross_weight'];
     }
 }
+$amountInWords = amountToEnglishWords((string)$total);
+
+if ($itemsTable !== [] && is_array($_SESSION['collection_data'] ?? null)) {
+    $_SESSION['collection_data']['3'] = [
+        'titulo' => '',
+        'items' => [
+            'cartonesTotal' => [
+                'value' => $cartonesTotal,
+                'name_show' => 'Total Cartones',
+                'visible' => false,
+            ],
+            'total' => [
+                'value' => $total,
+                'name_show' => 'Total',
+                'visible' => false,
+            ],
+            'cantidadTotal' => [
+                'value' => $cantidadTotal,
+                'name_show' => 'Cantidad Total',
+                'visible' => false,
+            ],
+            'gross_weightTotal' => [
+                'value' => $gross_weightTotal,
+                'name_show' => 'Peso Bruto Total',
+                'visible' => false,
+            ],
+            'amountInWords' => [
+                'value' => $amountInWords,
+                'name_show' => 'Monto en Texto',
+                'visible' => false,
+            ],
+        ],
+    ];
+}
 
 $editableItemFields = [
-    'model' => 'Modelo',
-    'brand' => 'Marca',
+    'item_name'=>'Item Name(Nombre)',
+    'model' => 'Model(Modelo)',
+    'brand' => 'Brand(Marca)',
     'material' => 'Material',
-    'condition' => 'Condición',
+    'condition' => 'Condicion',
     'length' => 'Largo',
     'width' => 'Ancho',
     'heigth' => 'Alto',
+    'hc_code' => 'HC Code(Codigo HC)',
     
 ];
 $fixedItemFields = [
@@ -129,6 +166,17 @@ $fixedItemFields = [
         .drop-zone:hover {
             border-color: #0054a6;
         }
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 1rem;
+        }
+        .summary-grid-2 {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 1rem;
+        }
+        
     </style>
 </head>
 <body class="bg-gray-900 min-h-screen flex items-center justify-center p-4 text-gray-100">
@@ -165,7 +213,7 @@ $fixedItemFields = [
                 <?php if (is_array($itemsTable) && $itemsTable !== []): ?>
                     <section class="space-y-3">
                         <h3 class="text-lg font-semibold text-yellow-500">Items</h3>
-                        <div class="overflow-x-auto">
+                        <div class="">
                             <table class="w-full text-sm border-collapse">
                                 <thead>
                                     <tr>
@@ -194,27 +242,32 @@ $fixedItemFields = [
                                 </tbody>
                             </table>
                         </div>
-                        <div class="grid grid-cols-4 md:grid-cols-4 gap-4">
-                            <div class="rounded border border-gray-700 bg-gray-900 p-5">
+                        <div class="summary-grid">
+                            <div class="rounded border border-gray-700 bg-gray-900 p-2">
                                 <span class="block text-xs font-bold text-gray-400 uppercase">Cartones</span>
-                                <span class="text-lg text-white"><?= $cartonesTotal ?></span>
+                                <span class="text-xs font-bold text-white"><?= $cartonesTotal ?></span>
                             </div>
-                            <div class="rounded border border-gray-700 bg-gray-900 p-5">
+                            <div class="rounded border border-gray-700 bg-gray-900 p-2">
                                 <span class="block text-xs font-bold text-gray-400 uppercase">Total</span>
-                                <span class="text-lg text-white"><?= number_format($total, 2, '.', ',') ?></span>
+                                <span class="text-xs font-bold text-white"><?= number_format($total, 2, '.', ',') ?></span>
                             </div>
-                            <div class="rounded border border-gray-700 bg-gray-900 p-5">
+                            <div class="rounded border border-gray-700 bg-gray-900 p-2">
                                 <span class="block text-xs font-bold text-gray-400 uppercase">Cantidad</span>
-                                <span class="text-lg text-white"><?= $cantidadTotal ?></span>
+                                <span class="text-xs font-bold text-white"><?= $cantidadTotal ?></span>
                             </div>
-                            <div class="rounded border border-gray-700 bg-gray-900 p-5">
+                            <div class="rounded border border-gray-700 bg-gray-900 p-2">
                                 <span class="block text-xs font-bold text-gray-400 uppercase">Peso Total</span>
-                                <span class="text-lg text-white"><?= $gross_weightTotal ?> kg</span>
+                                <span class="text-xs font-bold text-white"><?= $gross_weightTotal ?> kg</span>
                             </div>
+                            
                         </div>
+                         <div class="rounded border border-gray-700 bg-gray-900 p-2">
+                                <span class="block text-xs font-bold text-gray-400 uppercase">Monto en Literal</span>
+                                <span class="text-xs font-bold text-white"><?= $amountInWords ?> </span>
+                            </div>                               
                     </section>
                 <?php endif; ?>
-                <div class="grid grid-cols-1 gap-4">
+                <div class="summary-grid-2">
                     <?php foreach ($collection as $groupKey => $group): ?>
                         <?php
                             if (!is_array($group)) {
@@ -227,7 +280,7 @@ $fixedItemFields = [
                                 continue;
                             }
                         ?>
-                        <section class="space-y-3">
+                        <section class="space-y-3 border border-gray-700 p-2">
                             <?php if ($groupTitle !== ''): ?>
                                 <h3 class="text-lg font-semibold text-yellow-500"><?= htmlspecialchars((string) $groupTitle, ENT_QUOTES, 'UTF-8') ?></h3>
                             <?php endif; ?>
