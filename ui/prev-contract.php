@@ -2,10 +2,24 @@
 include_once('../config/configs.php');
 session_start();
 
-function getDataRender($dataRender){
-    return [];//completar la funcion ejemplo de salida:
-    // $data['address'] 
-    // $data['contract'] etc
+function getDataRender(array $dataRender): array
+{
+    $renderData = [];
+
+    foreach ($dataRender as $group) {
+        $items = $group['items'] ?? [];
+        if (!is_array($items)) {
+            continue;
+        }
+
+        foreach ($items as $key => $field) {
+            $renderData[$key] = is_array($field) && array_key_exists('value', $field)
+                ? $field['value']
+                : $field;
+        }
+    }
+
+    return $renderData;
 }
 
 $data_collection = $_SESSION['collection_data'] ?? [];
@@ -37,11 +51,10 @@ if (empty($data)) {
     exit;
 }
 
-//completar data
 $pageRender = [
-    'header' => $data['..'],
-    'address' => $data['..'],
-    'contract' => $data['..']
+    'header' => $data['header'] ?? '',
+    'address' => $data['address'] ?? '',
+    'contract' => $data['contract'] ?? '',
 ];
 
 
