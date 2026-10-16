@@ -23,9 +23,11 @@ function getDataRender(array $dataRender): array
 }
 
 $data_collection = $_SESSION['collection_data'] ?? [];
+$items_collection = $_SESSION['collection_table'] ?? [];
 
 
 $data = getDataRender($data_collection);
+
 
 
 function renderHeader($page)

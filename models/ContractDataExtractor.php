@@ -110,7 +110,11 @@ class ContractDataExtractor
     }
     private function getItemsFormatArray(array $mspiItems, array $packingItems, array $invoiceItems,array $inputItems): array
     {
-        if (count($mspiItems) !== count($packingItems) || count($mspiItems) !== count($invoiceItems) !== count($inputItems)) {
+        if (
+            count($mspiItems) !== count($packingItems)
+            || count($mspiItems) !== count($invoiceItems)
+            || count($mspiItems) !== count($inputItems)
+        ) {
             throw new \RuntimeException('La cantidad de items del MSPI, packing list y factura debe coincidir.');
         }
 
@@ -197,9 +201,9 @@ class ContractDataExtractor
             $cartons = (float) $values['cartons'];
             $items[] = [
                 'cartons' => floor($cartons) === $cartons ? (int) $cartons : $cartons,
-                'length' => (int) round((float) $values['length']),
-                'width' => (int) round((float) $values['width']),
-                'heigth' => (int) round((float) $values['heigth']),
+                'length' => (int) (round((float) $values['length']))*10,
+                'width' => (int) (round((float) $values['width']))*10,
+                'heigth' => (int) (round((float) $values['heigth']))*10,
             ];
         }
 
@@ -324,19 +328,6 @@ class ContractDataExtractor
                 'visible' => true,
             ],
 
-            //items
-            //Led Luminaire const 
-            //brand: Lumens const
-            //Models: LC110030,APB-150W sacar de la factura comercial
-            //Dimensions: 720*280*110mm MSPI lista de empaque
-            //Material: Aluminum const
-            //Condition: New const
-
-            'contract_model' => [
-                'value' => 'Lumens',
-                'name_show' => 'Marca',
-                'visible' => true,
-            ],
             'account_name' => [
                 'value' => $this->findValueRightOfLabel($sheet, 'Account name'),
                 'name_show' => 'Nombre Banco',

@@ -4,6 +4,7 @@ session_start();
 
 $step = $_GET['step'] ?? 'upload';
 $collection = $_SESSION['collection_data'] ?? [];
+$itemsTable = $_SESSION['collection_table'] ?? [];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && $step === 'review') {
     $submittedGroups = $_POST['collection_data'] ?? [];
@@ -40,9 +41,46 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $step === 'review') {
     }
 
     $_SESSION['collection_data'] = $currentCollection;
+
+    $currentTable = $_SESSION['collection_table'] ?? [];
+    $submittedTable = $_POST['collection_table'] ?? [];
+    $editableItemFields = ['model', 'brand', 'material', 'condition', 'length', 'width', 'heigth'];
+
+    if (is_array($currentTable) && is_array($submittedTable)) {
+        foreach ($currentTable as $itemIndex => $currentItem) {
+            if (!is_array($currentItem) || !isset($submittedTable[$itemIndex]) || !is_array($submittedTable[$itemIndex])) {
+                continue;
+            }
+
+            foreach ($editableItemFields as $fieldName) {
+                $submittedValue = $submittedTable[$itemIndex][$fieldName] ?? null;
+                if (is_scalar($submittedValue)) {
+                    $currentTable[$itemIndex][$fieldName] = (string) $submittedValue;
+                }
+            }
+        }
+    }
+
+    $_SESSION['collection_table'] = $currentTable;
     header('Location: prev-contract.php');
     exit;
 }
+
+$editableItemFields = [
+    'model' => 'Modelo',
+    'brand' => 'Marca',
+    'material' => 'Material',
+    'condition' => 'Condición',
+    'length' => 'Largo',
+    'width' => 'Ancho',
+    'heigth' => 'Alto',
+];
+$fixedItemFields = [
+    'price' => 'Precio',
+    'quantity' => 'Cantidad',
+    'subtotal' => 'Subtotal',
+    'cartons' => 'Cartones',
+];
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -66,7 +104,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $step === 'review') {
     </style>
 </head>
 <body class="bg-gray-900 min-h-screen flex items-center justify-center p-4 text-gray-100">
-    <div class="bg-gray-800 p-8 rounded-lg shadow-2xl max-w-2xl w-full border border-gray-700">
+    <div class="bg-gray-800 p-8 rounded-lg shadow-2xl max-w-6xl w-full border border-gray-700">
         <h1 class="text-2xl font-bold text-center text-white mb-6">LECTURA DE ARCHIVOS</h1>
         
         <?php if ($step === 'upload'): ?>
@@ -96,6 +134,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $step === 'review') {
             </form>
         <?php elseif ($step === 'review'): ?>
             <form action="main.php?step=review" method="POST" class="space-y-4">
+                <?php if (is_array($itemsTable) && $itemsTable !== []): ?>
+                    <section class="space-y-3">
+                        <h3 class="text-lg font-semibold text-yellow-500">Items</h3>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-sm border-collapse">
+                                <thead>
+                                    <tr>
+                                        <?php foreach (array_merge(['model' => 'Modelo'], $fixedItemFields, array_diff_key($editableItemFields, ['model' => true])) as $label): ?>
+                                            <th class="border border-gray-600 px-2 py-2 text-left text-gray-300"><?= htmlspecialchars($label, ENT_QUOTES, 'UTF-8') ?></th>
+                                        <?php endforeach; ?>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php foreach ($itemsTable as $itemIndex => $item): ?>
+                                        <?php if (!is_array($item)) continue; ?>
+                                        <tr>
+                                            <td class="border border-gray-600 px-2 py-2">
+                                                <input type="text" name="collection_table[<?= (int) $itemIndex ?>][model]" value="<?= htmlspecialchars((string) ($item['model'] ?? ''), ENT_QUOTES, 'UTF-8') ?>" class="bg-gray-700 border border-gray-600 text-white p-2 rounded w-full">
+                                            </td>
+                                            <?php foreach ($fixedItemFields as $fieldName => $label): ?>
+                                                <td class="border border-gray-600 px-2 py-2 text-gray-200"><?= htmlspecialchars((string) ($item[$fieldName] ?? ''), ENT_QUOTES, 'UTF-8') ?></td>
+                                            <?php endforeach; ?>
+                                            <?php foreach (array_diff_key($editableItemFields, ['model' => true]) as $fieldName => $label): ?>
+                                                <td class="border border-gray-600 px-2 py-2">
+                                                    <input type="text" name="collection_table[<?= (int) $itemIndex ?>][<?= htmlspecialchars($fieldName, ENT_QUOTES, 'UTF-8') ?>]" value="<?= htmlspecialchars((string) ($item[$fieldName] ?? ''), ENT_QUOTES, 'UTF-8') ?>" class="bg-gray-700 border border-gray-600 text-white p-2 rounded w-full">
+                                                </td>
+                                            <?php endforeach; ?>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+                <?php endif; ?>
                 <div class="grid grid-cols-1 gap-4">
                     <?php foreach ($collection as $groupKey => $group): ?>
                         <?php
