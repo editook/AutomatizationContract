@@ -134,6 +134,7 @@ class ContractDataExtractor
                 'length' => $packingItem['length'],
                 'width' => $packingItem['width'],
                 'heigth' => $packingItem['heigth'],
+                'gross_weight' => $packingItem['gross_weight'],
             ];
         }
 
@@ -151,27 +152,36 @@ class ContractDataExtractor
         for ($row = 1; $row < $sheet->getHighestDataRow(); $row++) {
             $cartonsColumn = null;
             $dimensionColumns = [];
+            $grossWeightColumn = null;
 
             for ($column = 1; $column <= $lastColumn; $column++) {
                 $columnLetter = Coordinate::stringFromColumnIndex($column);
                 $header = strtolower($this->clean($sheet->getCell($columnLetter . $row)->getValue() ?? ''));
                 $dimension = strtolower($this->clean($sheet->getCell($columnLetter . ($row + 1))->getValue() ?? ''));
+                $normalizedDimension = trim(preg_replace(
+                    '/\s+/',
+                    ' ',
+                    preg_replace('/\s*\([^)]*\)/', '', $dimension)
+                ));
 
                 if ($header === 'cartons') {
                     $cartonsColumn = $column;
                 }
-                if (in_array($dimension, ['length', 'width', 'height'], true)) {
-                    $dimensionColumns[$dimension] = $column;
+                if (in_array($normalizedDimension, ['length', 'width', 'height'], true)) {
+                    $dimensionColumns[$normalizedDimension] = $column;
+                } elseif ($normalizedDimension === 'gross weight') {
+                    $grossWeightColumn = $column;
                 }
             }
 
-            if ($cartonsColumn !== null && count($dimensionColumns) === 3) {
+            if ($cartonsColumn !== null && count($dimensionColumns) === 3 && $grossWeightColumn !== null) {
                 $headerRow = $row;
                 $columns = [
                     'cartons' => $cartonsColumn,
                     'length' => $dimensionColumns['length'],
                     'width' => $dimensionColumns['width'],
                     'heigth' => $dimensionColumns['height'],
+                    'gross_weight' => $grossWeightColumn,
                 ];
                 break;
             }
@@ -194,6 +204,7 @@ class ContractDataExtractor
                 || !is_numeric($values['length'])
                 || !is_numeric($values['width'])
                 || !is_numeric($values['heigth'])
+                || !is_numeric($values['gross_weight'])
             ) {
                 continue;
             }
@@ -204,6 +215,7 @@ class ContractDataExtractor
                 'length' => (int) (round((float) $values['length']))*10,
                 'width' => (int) (round((float) $values['width']))*10,
                 'heigth' => (int) (round((float) $values['heigth']))*10,
+                'gross_weight' => (float) $values['gross_weight'],
             ];
         }
 

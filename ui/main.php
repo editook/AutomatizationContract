@@ -44,7 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $step === 'review') {
 
     $currentTable = $_SESSION['collection_table'] ?? [];
     $submittedTable = $_POST['collection_table'] ?? [];
-    $editableItemFields = ['model', 'brand', 'material', 'condition', 'length', 'width', 'heigth'];
+    $editableItemFields = ['model', 'brand', 'material', 'condition', 'length', 'width', 'heigth', 'gross_weight'];
 
     if (is_array($currentTable) && is_array($submittedTable)) {
         foreach ($currentTable as $itemIndex => $currentItem) {
@@ -66,6 +66,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $step === 'review') {
     exit;
 }
 
+$currentTable = $_SESSION['collection_table'] ?? [];
+$itemsTable = is_array($currentTable) ? $currentTable : [];
+$cartonesTotal = 0;
+$total = 0.0;
+$cantidadTotal = 0;
+$gross_weightTotal = 0.0;
+
+foreach ($currentTable as $item) {
+    if (!is_array($item)) {
+        continue;
+    }
+
+    if (is_numeric($item['cartons'] ?? null)) {
+        $cartonesTotal += (int) $item['cartons'];
+    }
+    if (is_numeric($item['subtotal'] ?? null)) {
+        $total += (float) $item['subtotal'];
+    }
+    if (is_numeric($item['quantity'] ?? null)) {
+        $cantidadTotal += (int) $item['quantity'];
+    }
+    if (is_numeric($item['gross_weight'] ?? null)) {
+        $gross_weightTotal += (float) $item['gross_weight'];
+    }
+}
+
 $editableItemFields = [
     'model' => 'Modelo',
     'brand' => 'Marca',
@@ -74,12 +100,14 @@ $editableItemFields = [
     'length' => 'Largo',
     'width' => 'Ancho',
     'heigth' => 'Alto',
+    
 ];
 $fixedItemFields = [
     'price' => 'Precio',
     'quantity' => 'Cantidad',
     'subtotal' => 'Subtotal',
     'cartons' => 'Cartones',
+    'gross_weight' => 'Gross Weight',
 ];
 ?>
 <!DOCTYPE html>
@@ -165,6 +193,24 @@ $fixedItemFields = [
                                     <?php endforeach; ?>
                                 </tbody>
                             </table>
+                        </div>
+                        <div class="grid grid-cols-4 md:grid-cols-4 gap-4">
+                            <div class="rounded border border-gray-700 bg-gray-900 p-5">
+                                <span class="block text-xs font-bold text-gray-400 uppercase">Cartones</span>
+                                <span class="text-lg text-white"><?= $cartonesTotal ?></span>
+                            </div>
+                            <div class="rounded border border-gray-700 bg-gray-900 p-5">
+                                <span class="block text-xs font-bold text-gray-400 uppercase">Total</span>
+                                <span class="text-lg text-white"><?= number_format($total, 2, '.', ',') ?></span>
+                            </div>
+                            <div class="rounded border border-gray-700 bg-gray-900 p-5">
+                                <span class="block text-xs font-bold text-gray-400 uppercase">Cantidad</span>
+                                <span class="text-lg text-white"><?= $cantidadTotal ?></span>
+                            </div>
+                            <div class="rounded border border-gray-700 bg-gray-900 p-5">
+                                <span class="block text-xs font-bold text-gray-400 uppercase">Peso Total</span>
+                                <span class="text-lg text-white"><?= $gross_weightTotal ?> kg</span>
+                            </div>
                         </div>
                     </section>
                 <?php endif; ?>
