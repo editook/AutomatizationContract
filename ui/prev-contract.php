@@ -22,9 +22,21 @@ function getDataRender(array $dataRender): array
     return $renderData;
 }
 
+$items_values = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'];
+
 $data_collection = $_SESSION['collection_data'] ?? [];
 $items_collection = $_SESSION['collection_table'] ?? [];
-
+$itemBrands = [];
+$itemNames = [];
+$itemModels = [];
+foreach ($items_collection as $itemIndex => $product) {
+    $itemBrands[] = $product['brand'];
+    $itemNames[] = $product['item_name'];
+    $itemModels[] = $product['model'];
+}
+$itemBrands = array_values(array_unique($itemBrands));
+$itemNames = array_values(array_unique($itemNames));
+$itemModels = array_values(array_unique($itemModels));
 //echo json_encode($data_collection);
 $data = getDataRender($data_collection);
 
@@ -213,24 +225,25 @@ $pageRender = [
                                     <tbody>
                                         <tr>
                                             <td class="border border-black font-bold pl-1">Contract No: <span class="font-normal highlight"><?= $data['contract'] ?></span></td>
-                                            <td class="border border-black font-bold pl-1">Date: <span class="font-normal"><?= $data['order_date'] ?></span></td>
+                                            <td class="border border-black font-bold pl-1">Date: <span class="font-normal highlight"><?= $data['order_date'] ?></span></td>
                                         </tr>
                                         <tr>
-                                            <td class="border border-black pl-1"><strong>Buyer:</strong> <span class="font-normal"><?= $data['customer_name'] ?></span></td>
-                                            <td class="border border-black pl-1"><strong>Seller:</strong> <span class="font-normal"><?= $data['header'] ?></span></td>
+                                            <td class="border border-black pl-1"><strong>Buyer:</strong> <span class="font-normal highlight"><?= $data['customer_name'] ?></span></td>
+                                            <td class="border border-black pl-1"><strong>Seller:</strong> <span class="font-normal highlight"><?= $data['header'] ?></span></td>
                                         </tr>
                                         <tr>
-                                            <td class="border border-black pl-1"><strong>Address:</strong> <span class="font-normal"><?= $data['customer_address'] ?></span></td>
-                                            <td class="border border-black pl-1"><strong>Address:</strong> <span class="font-normal"><?= $data['address'] ?></span></td>
+                                            <td class="border border-black pl-1"><strong>Address:</strong> <span class="font-normal highlight"><?= $data['customer_address'] ?></span></td>
+                                            <td class="border border-black pl-1"><strong>Address:</strong> <span class="font-normal highlight"><?= $data['address'] ?></span></td>
                                         </tr>
                                         <tr>
-                                            <td class="border border-black pl-1"><strong>Contact:</strong> <span class="font-normal"><?= $data['customer_tel'] ?></span>
-                                            <br><strong>Email:</strong> <span class="font-normal"><?= $data['customer_email'] ?></span>
+                                            <td class="border border-black pl-1"><strong>Contact:</strong> <span class="font-normal highlight"><?= $data['customer_tel'] ?></span>
+                                                <br><strong>Email:</strong> <span class="font-normal highlight"><?= $data['customer_email'] ?></span>
                                             </td>
-                                            <td class="border border-black pl-1"><strong>Tel:</strong> <span class="font-normal"><?= $data['tel'] ?></span>
-                                        <br><strong>Email:</strong> <span class="font-normal"><?= $data['email']?></span></td>
+                                            <td class="border border-black pl-1"><strong>Tel:</strong> <span class="font-normal highlight"><?= $data['tel'] ?></span>
+                                                <br><strong>Email:</strong> <span class="font-normal highlight"><?= $data['email'] ?></span>
+                                            </td>
                                         </tr>
-                                        
+
                                         <tr>
                                             <td colspan="2" class="border border-black pl-1 italic">
                                                 This agreement is made between the buyer and the seller under the following terms and conditions:
@@ -259,31 +272,41 @@ $pageRender = [
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
-                                            <td class="pl-1 text-center">1</td>
-                                            <td class="pl-1 text-center">LED LUMINAIRE</td>
-                                            <td class="pl-1 font-bold">Brand:Lumens<br>Model:LC12323<br>Dimensions:570*250*120mm<br>Material:Aluminam<br>Condition:New</td>
-                                            <td class="pl-1 text-center">(9405)</td>
-                                            <td class="pl-1 text-center">76</td>
-                                            <td class="pl-1 text-center">21.00</td>
-                                            <td class="pl-1 text-center">1,596.00</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="pl-1 text-center">2</td>
-                                            <td class="pl-1 text-center">LED LUMINAIRE</td>
-                                            <td class="pl-1 font-bold">Brand:Lumens<br>Model:LC12323<br>Dimensions:570*250*120mm<br>Material:Aluminam<br>Condition:New</td>
-                                            <td class="pl-1 text-center">(9405)</td>
-                                            <td class="pl-1 text-center">44</td>
-                                            <td class="pl-1 text-center">36.10</td>
-                                            <td class="pl-1 text-center">1,588.40</td>
-                                        </tr>
+                                        <?php foreach ($items_collection as $itemIndex => $product): ?>
+                                            <?php
+                                            if (!is_array($product)) {
+                                                continue;
+                                            }
+
+                                            $productDimensions = implode('*', [
+                                                $product['length'],
+                                                $product['width'],
+                                                $product['heigth'],
+                                            ]) . 'mm';
+                                            ?>
+                                            <tr>
+                                                <td class="pl-1 text-center"><?= (int) $itemIndex + 1 ?></td>
+                                                <td class="pl-1 text-center"><?= htmlspecialchars($product['item_name']) ?></td>
+                                                <td class="pl-1 font-bold">
+                                                    Brand: <span class="highlight"><?= htmlspecialchars($product['brand']) ?></span><br>
+                                                    Model:<span class="highlight"><?= htmlspecialchars($product['model']) ?></span><br>
+                                                    Dimensions:<span class="highlight"><?= htmlspecialchars($productDimensions) ?></span><br>
+                                                    Material:<span class="highlight"><?= htmlspecialchars($product['material']) ?></span><br>
+                                                    Condition:<span class="highlight"><?= htmlspecialchars($product['condition']) ?></span>
+                                                </td>
+                                                <td class="pl-1 text-center">(<span class="highlight"><?= htmlspecialchars($product['hc_code']) ?></span>)</td>
+                                                <td class="pl-1 text-center"><span class="highlight"><?= $product['quantity'] ?></span> </td>
+                                                <td class="pl-1 text-center"><span class="highlight">$<?= number_format((float) ($product['price'] ?? 0), 2, '.', ',') ?></span></td>
+                                                <td class="pl-1 text-center"><span class="highlight">$<?= number_format((float) ($product['subtotal'] ?? 0), 2, '.', ',') ?></span></td>
+                                            </tr>
+                                        <?php endforeach; ?>
                                     </tbody>
                                     <tfoot>
                                         <tr>
                                             <td colspan="4" class=""></td>
-                                            <td class="text-center font-bold"><?= $data['cartonesTotal']?></td>
+                                            <td class="text-center font-bold"> <span class="highlight"><?= $data['cantidadTotal'] ?? 0 ?></span></td>
                                             <td class="text-center font-bold">Total Amount</td>
-                                            <td class="text-center font-bold highlight">$<?= number_format($data['total'], 2, '.', ',') ?></td>
+                                            <td class="text-center font-bold"><span class="highlight">$<?= number_format($data['total'], 2, '.', ',') ?></span> </td>
                                         </tr>
                                     </tfoot>
                                 </table>
@@ -297,10 +320,10 @@ $pageRender = [
                                 <div class="space-y-3">
                                     <p class="font-bold">Clause One – (Parties)</p>
                                     <p class="text-justify">
-                                        <span class="highlight"><?= $data['header'] ?></span>, a limited liability company organized and existing under the laws of China, with its registered office at <span class="highlight"><?= $data['address'] ?></span>, email <span class="highlight"><?= $data['email']?></span>, and phone number <span class="highlight"><?= $data['tel'] ?></span>. Hereinafter referred to as the <strong class="uppercase">“SELLER.”</strong>
+                                        <span class="highlight"><?= $data['header'] ?></span>, a limited liability company organized and existing under the laws of China, with its registered office at <span class="highlight"><?= $data['address'] ?></span>, email <span class="highlight"><?= $data['email'] ?></span>, and phone number <span class="highlight"><?= $data['tel'] ?></span>. Hereinafter referred to as the <strong class="uppercase">“SELLER.”</strong>
                                     </p>
                                     <p class="text-justify">
-                                        <span class="highlight"><?= $data['customer_name']?></span>, a limited liability company organized and existing under the laws of the United States of America, with its registered office at <span class="highlight"><?= $data['customer_address'] ?></span>, email <span class="highlight"><?= $data['customer_email'] ?></span>, and phone number <span class="highlight"><?= $data['customer_tel'] ?></span>. Hereinafter referred to as the <strong class="uppercase">“BUYER.”</strong>
+                                        <span class="highlight"><?= $data['customer_name'] ?></span>, a limited liability company organized and existing under the laws of the United States of America, with its registered office at <span class="highlight"><?= $data['customer_address'] ?></span>, email <span class="highlight"><?= $data['customer_email'] ?></span>, and phone number <span class="highlight"><?= $data['customer_tel'] ?></span>. Hereinafter referred to as the <strong class="uppercase">“BUYER.”</strong>
                                     </p>
                                 </div>
                             </div>
@@ -328,17 +351,28 @@ $pageRender = [
                                     <li>- <span class="highlight"><?= $data['cartonesTotal'] ?></span> cartons.</li>
                                     <li>- Gross weight: <span class="highlight"><?= $data['gross_weightTotal'] ?></span> kg.</li>
                                     <li>- Item Brand:
-                                        <div class="pl-4">a. Lumens</div>
-                                        
+                                        <?php foreach ($itemBrands as $itemIndex => $item) {
+                                            $index = $items_values[$itemIndex];
+                                        ?>
+                                            <div class="pl-4"><?= $index ?>. <span class="highlight"><?= ucwords(strtolower($item)) ?></span></div>
+                                        <?php } ?>
                                     </li>
                                     <li>- Items:
-                                        <div class="pl-4">a. Led Luminaire</div>
+                                        <?php foreach ($itemNames as $itemIndex => $item) {
+                                            $index = $items_values[$itemIndex];
+                                        ?>
+                                            <div class="pl-4"><?= $index ?>. <span class="highlight"><?= ucwords(strtolower($item)) ?> </span></div>
+                                        <?php } ?>
+
                                     </li>
                                     <li>- Model:
-                                        <div class="pl-4">a. LC110030</div>
-                                        <div class="pl-4">b. APB-150W</div>
+                                        <?php foreach ($itemModels as $itemIndex => $item) {
+                                            $index = $items_values[$itemIndex];
+                                        ?>
+                                            <div class="pl-4"><?= $index ?>. <span class="highlight"><?= ucwords($item) ?></span> </div>
+                                        <?php } ?>
                                     </li>
-                                    
+
                                 </ul>
                             </div>
                         </div>
@@ -347,7 +381,7 @@ $pageRender = [
                             <div class="text-sm space-y-6">
                                 <p class="font-bold">Clause Four – (Price and Forms of Payment)</p>
                                 <p class="text-justify">
-                                    The price agreed upon between the Seller and the Buyer for the imported item shall be <span class="highlight">$<?= $data['total'] ?></span> (<span class="highlight"><?= $data['amountInWords']?></span>).
+                                    The price agreed upon between the Seller and the Buyer for the imported item shall be <span class="highlight">$<?= number_format($data['total'], 2, '.', ',') ?></span> (<span class="highlight"><?= $data['amountInWords'] ?></span>).
                                 </p>
                                 <p class="text-justify">
                                     The total contract price shall be paid under mixed payment terms, consisting of advance and deferred payments, as follows:

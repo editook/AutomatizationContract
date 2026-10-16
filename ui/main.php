@@ -45,7 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $step === 'review') {
 
     $currentTable = $_SESSION['collection_table'] ?? [];
     $submittedTable = $_POST['collection_table'] ?? [];
-    $editableItemFields = ['model', 'brand', 'material', 'condition', 'length', 'width', 'heigth', 'gross_weight'];
+    $editableItemFields = ['item_name', 'model', 'brand', 'material', 'condition', 'length', 'width', 'heigth', 'hc_code', 'gross_weight'];
 
     if (is_array($currentTable) && is_array($submittedTable)) {
         foreach ($currentTable as $itemIndex => $currentItem) {
@@ -154,7 +154,7 @@ $fixedItemFields = [
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= WEB_TITLE ?> - Cargar Archivos</title>
     <link rel="icon" href="../assets/img/logo.png" type="image/x-icon" />
-    <link rel="stylesheet" href="../assets/css/tailwind.css">
+    <link rel="stylesheet" href="../assets/css/tailwind.css?<?= date('Y-m-d-H-i') ?>">
     <style>
         .drop-zone {
             border: 2px dashed #ccc;
@@ -180,24 +180,34 @@ $fixedItemFields = [
     </style>
 </head>
 <body class="bg-gray-900 min-h-screen flex items-center justify-center p-4 text-gray-100">
-    <div class="bg-gray-800 p-8 rounded-lg shadow-2xl max-w-6xl w-full border border-gray-700">
+    <div class="bg-gray-800 p-8 rounded-lg shadow-2xl w-full border border-gray-700 <?php if ($step === 'upload'){ echo 'max-w-6xl';} ?>">
         <h1 class="text-2xl font-bold text-center text-white mb-6">LECTURA DE ARCHIVOS</h1>
         
         <?php if ($step === 'upload'): ?>
+           
             <form action="process.php" method="POST" enctype="multipart/form-data" class="space-y-6">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="space-y-2">
-                        <label class="block text-sm font-medium text-gray-300">Archivo MSPI (.xls)</label>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="space-y-2 justify-self-center">
+                        <label class="flex items-center gap-2 text-sm font-medium text-gray-300">
+                            <img src="../assets/svg/excel.svg" class="h-7 w-7" alt="">
+                            <span>Archivo MSPI (.xls)</span>
+                        </label>
                         <input type="file" name="mspi_file" accept=".xls,.xlsx" required 
                                 class="block w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-900 file:text-blue-200 hover:file:bg-blue-800">
                     </div>
-                    <div class="space-y-2">
-                        <label class="block text-sm font-medium text-gray-300">Archivo Packing List (.xls)</label>
+                    <div class="space-y-2 justify-self-center">
+                        <label class="flex items-center gap-2 text-sm font-medium text-gray-300">
+                            <img src="../assets/svg/excel.svg" class="h-7 w-7" alt="">
+                            <span>Archivo Packing List (.xls)</span>
+                        </label>
                         <input type="file" name="packing_file" accept=".xls,.xlsx" required 
                                 class="block w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-900 file:text-blue-200 hover:file:bg-blue-800">
                     </div>
-                    <div class="space-y-2">
-                        <label class="block text-sm font-medium text-gray-300">Factura local (.pdf)</label>
+                    <div class="space-y-2 justify-self-center">
+                        <label class="flex items-center gap-2 text-sm font-medium text-gray-300">
+                            <img src="../assets/svg/pdf.svg" class="h-7 w-7" alt="">
+                            <span>Factura (.pdf)</span>
+                        </label>
                         <input type="file" name="invoice_file" accept=".pdf" required 
                                 class="block w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-900 file:text-blue-200 hover:file:bg-blue-800">
                     </div>
