@@ -46,7 +46,7 @@ function renderHeader($page)
 {
 ?>
     <div class="print-header print-header-force flex justify-between items-start mb-10">
-        <img src="../assets/img/log-company.png" class="h-auto w-40" alt="Company Logo">
+        <img src="../assets/img/log-company.png?<?= date('Y-m-d-H-i') ?>" class="h-auto w-40" alt="Company Logo">
         <div class="text-right">
             <h1 class="text-lg font-bold leading-tight text-[27px] text-center"><?= $page['header'] ?></h1>
             <p class="text-sm text-center mt-8">Add.:<?= $page['address'] ?></p>
@@ -81,7 +81,7 @@ $pageRender = [
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= WEB_TITLE ?> - Previsualización</title>
     <link rel="icon" href="../assets/img/logo.png" type="image/x-icon" />
-    <link rel="stylesheet" href="../assets/css/tailwind.css">
+    <link rel="stylesheet" href="../assets/css/tailwind.css?<?= date('Y-m-d-H-i') ?>">
     <style>
         .contract-page {
             width: 800px;

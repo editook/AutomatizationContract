@@ -17,13 +17,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     try {
         $extractor = new ContractDataExtractor();
-        $extractedData = $extractor->extract($mspi_file, $packing_file,$invoice_file);
+        $extractedData = $extractor->extract($mspi_file, $packing_file, $invoice_file);
 
         $_SESSION['collection_data'] = $extractedData['response'];
         $_SESSION['collection_table'] = $extractedData['items'];
         header('Location: main.php?step=review');
         exit;
-
     } catch (Exception $e) {
         die('Error procesando archivos: ' . $e->getMessage());
     }

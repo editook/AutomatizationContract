@@ -24,10 +24,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $step === 'review') {
         }
 
         foreach ($currentItems as $itemKey => $currentField) {
-            if (!is_array($currentField)
+            if (
+                !is_array($currentField)
                 || !array_key_exists('value', $currentField)
                 || !isset($submittedItems[$itemKey])
-                || !is_array($submittedItems[$itemKey])) {
+                || !is_array($submittedItems[$itemKey])
+            ) {
                 continue;
             }
 
@@ -128,7 +130,7 @@ if ($itemsTable !== [] && is_array($_SESSION['collection_data'] ?? null)) {
 }
 
 $editableItemFields = [
-    'item_name'=>'Item Name(Nombre)',
+    'item_name' => 'Item Name(Nombre)',
     'model' => 'Model(Modelo)',
     'brand' => 'Brand(Marca)',
     'material' => 'Material',
@@ -137,7 +139,7 @@ $editableItemFields = [
     'width' => 'Ancho',
     'heigth' => 'Alto',
     'hc_code' => 'HC Code(Codigo HC)',
-    
+
 ];
 $fixedItemFields = [
     'price' => 'Precio',
@@ -149,6 +151,7 @@ $fixedItemFields = [
 ?>
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -163,28 +166,33 @@ $fixedItemFields = [
             cursor: pointer;
             transition: border 0.3s ease;
         }
+
         .drop-zone:hover {
             border-color: #0054a6;
         }
+
         .summary-grid {
             display: grid;
             grid-template-columns: repeat(4, minmax(0, 1fr));
             gap: 1rem;
         }
+
         .summary-grid-2 {
             display: grid;
             grid-template-columns: repeat(2, minmax(0, 1fr));
             gap: 1rem;
         }
-        
     </style>
 </head>
+
 <body class="bg-gray-900 min-h-screen flex items-center justify-center p-4 text-gray-100">
-    <div class="bg-gray-800 p-8 rounded-lg shadow-2xl w-full border border-gray-700 <?php if ($step === 'upload'){ echo 'max-w-6xl';} ?>">
+    <div class="bg-gray-800 p-8 rounded-lg shadow-2xl w-full border border-gray-700 <?php if ($step === 'upload') {
+                                                                                        echo 'max-w-6xl';
+                                                                                    } ?>">
         <h1 class="text-2xl font-bold text-center text-white mb-6">LECTURA DE ARCHIVOS</h1>
-        
+
         <?php if ($step === 'upload'): ?>
-           
+
             <form action="process.php" method="POST" enctype="multipart/form-data" class="space-y-6">
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div class="space-y-2 justify-self-center">
@@ -192,24 +200,24 @@ $fixedItemFields = [
                             <img src="../assets/svg/excel.svg" class="h-7 w-7" alt="">
                             <span>Archivo MSPI (.xls)</span>
                         </label>
-                        <input type="file" name="mspi_file" accept=".xls,.xlsx" required 
-                                class="block w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-900 file:text-blue-200 hover:file:bg-blue-800">
+                        <input type="file" name="mspi_file" accept=".xls,.xlsx" required
+                            class="block w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-900 file:text-blue-200 hover:file:bg-blue-800">
                     </div>
                     <div class="space-y-2 justify-self-center">
                         <label class="flex items-center gap-2 text-sm font-medium text-gray-300">
                             <img src="../assets/svg/excel.svg" class="h-7 w-7" alt="">
                             <span>Archivo Packing List (.xls)</span>
                         </label>
-                        <input type="file" name="packing_file" accept=".xls,.xlsx" required 
-                                class="block w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-900 file:text-blue-200 hover:file:bg-blue-800">
+                        <input type="file" name="packing_file" accept=".xls,.xlsx" required
+                            class="block w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-900 file:text-blue-200 hover:file:bg-blue-800">
                     </div>
                     <div class="space-y-2 justify-self-center">
                         <label class="flex items-center gap-2 text-sm font-medium text-gray-300">
                             <img src="../assets/svg/pdf.svg" class="h-7 w-7" alt="">
                             <span>Factura (.pdf)</span>
                         </label>
-                        <input type="file" name="invoice_file" accept=".pdf" required 
-                                class="block w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-900 file:text-blue-200 hover:file:bg-blue-800">
+                        <input type="file" name="invoice_file" accept=".pdf" required
+                            class="block w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-900 file:text-blue-200 hover:file:bg-blue-800">
                     </div>
                 </div>
                 <div class="flex justify-center pt-4">
@@ -269,26 +277,26 @@ $fixedItemFields = [
                                 <span class="block text-xs font-bold text-gray-400 uppercase">Peso Total</span>
                                 <span class="text-xs font-bold text-white"><?= $gross_weightTotal ?> kg</span>
                             </div>
-                            
+
                         </div>
-                         <div class="rounded border border-gray-700 bg-gray-900 p-2">
-                                <span class="block text-xs font-bold text-gray-400 uppercase">Monto en Literal</span>
-                                <span class="text-xs font-bold text-white"><?= $amountInWords ?> </span>
-                            </div>                               
+                        <div class="rounded border border-gray-700 bg-gray-900 p-2">
+                            <span class="block text-xs font-bold text-gray-400 uppercase">Monto en Literal</span>
+                            <span class="text-xs font-bold text-white"><?= $amountInWords ?> </span>
+                        </div>
                     </section>
                 <?php endif; ?>
                 <div class="summary-grid-2">
                     <?php foreach ($collection as $groupKey => $group): ?>
                         <?php
-                            if (!is_array($group)) {
-                                continue;
-                            }
+                        if (!is_array($group)) {
+                            continue;
+                        }
 
-                            $groupTitle = $group['titulo'] ?? '';
-                            $items = $group['items'] ?? [];
-                            if (!is_array($items)) {
-                                continue;
-                            }
+                        $groupTitle = $group['titulo'] ?? '';
+                        $items = $group['items'] ?? [];
+                        if (!is_array($items)) {
+                            continue;
+                        }
                         ?>
                         <section class="space-y-3 border border-gray-700 p-2">
                             <?php if ($groupTitle !== ''): ?>
@@ -297,21 +305,21 @@ $fixedItemFields = [
 
                             <?php foreach ($items as $key => $field): ?>
                                 <?php
-                                    if (!is_array($field) || !array_key_exists('value', $field)) {
-                                        continue;
-                                    }
-                                    if (!($field['visible'] ?? false)) {
-                                        continue;
-                                    }
+                                if (!is_array($field) || !array_key_exists('value', $field)) {
+                                    continue;
+                                }
+                                if (!($field['visible'] ?? false)) {
+                                    continue;
+                                }
 
-                                    $fieldValue = is_scalar($field['value']) ? (string) $field['value'] : '';
+                                $fieldValue = is_scalar($field['value']) ? (string) $field['value'] : '';
 
-                                    $fieldLabel = $field['name_show'] ?? str_replace('_', ' ', (string) $key);
+                                $fieldLabel = $field['name_show'] ?? str_replace('_', ' ', (string) $key);
                                 ?>
                                 <div class="flex flex-col space-y-1">
                                     <label class="text-xs font-bold text-gray-400 uppercase"><?= htmlspecialchars((string) $fieldLabel, ENT_QUOTES, 'UTF-8') ?></label>
                                     <input type="text" name="collection_data[<?= htmlspecialchars((string) $groupKey, ENT_QUOTES, 'UTF-8') ?>][items][<?= htmlspecialchars((string) $key, ENT_QUOTES, 'UTF-8') ?>][value]" value="<?= htmlspecialchars((string) $fieldValue, ENT_QUOTES, 'UTF-8') ?>"
-                                            class="bg-gray-700 border border-gray-600 text-white p-2 rounded focus:ring-2 focus:ring-blue-500 outline-none">
+                                        class="bg-gray-700 border border-gray-600 text-white p-2 rounded focus:ring-2 focus:ring-blue-500 outline-none">
                                 </div>
                             <?php endforeach; ?>
                         </section>
@@ -328,4 +336,5 @@ $fixedItemFields = [
     </div>
 
 </body>
+
 </html>

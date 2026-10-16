@@ -89,8 +89,8 @@ class ContractDataExtractor
         ];
 
         $response = [
-            ['titulo' => 'Empresa Contratante', 'items' => $solicitante],
-            ['titulo' => 'Empresa Contratada', 'items' => $solicitado],
+            ['titulo' => 'Datos del Comprador', 'items' => $solicitante],
+            ['titulo' => 'Datos del Vendedor', 'items' => $solicitado],
             ['titulo' => 'MSDI', 'items' => $mspiData],
         ];
 
