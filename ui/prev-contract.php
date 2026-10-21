@@ -286,7 +286,7 @@ $pageRender = [
                                             ?>
                                             <tr>
                                                 <td class="pl-1 text-center"><?= (int) $itemIndex + 1 ?></td>
-                                                <td class="pl-1 text-center"><?= htmlspecialchars($product['item_name']) ?></td>
+                                                <td class="pl-1 text-center"><span class="highlight"><?= htmlspecialchars($product['item_name']) ?></span></td>
                                                 <td class="pl-1 font-bold">
                                                     Brand: <span class="highlight"><?= htmlspecialchars($product['brand']) ?></span><br>
                                                     Model:<span class="highlight"><?= htmlspecialchars($product['model']) ?></span><br>

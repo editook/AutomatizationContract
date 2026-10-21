@@ -361,10 +361,17 @@ class ContractDataExtractor
 
     private function findValueRightOfLabel(Worksheet $sheet, string $label): string
     {
+        $lastColumn = Coordinate::columnIndexFromString($sheet->getHighestDataColumn());
+
         for ($row = 1; $row <= $sheet->getHighestDataRow(); $row++) {
-            $cellLabel = $this->clean($sheet->getCell('B' . $row)->getValue() ?? '');
-            if (strcasecmp($cellLabel, $label) === 0) {
-                return $this->clean($sheet->getCell('C' . $row)->getValue() ?? '');
+            for ($column = 1; $column <= $lastColumn; $column++) {
+                $columnLetter = Coordinate::stringFromColumnIndex($column);
+                $cellLabel = $this->clean($sheet->getCell($columnLetter . $row)->getValue() ?? '');
+
+                if (strcasecmp($cellLabel, $label) === 0 && $column < $lastColumn) {
+                    $valueColumn = Coordinate::stringFromColumnIndex($column + 1);
+                    return $this->clean($sheet->getCell($valueColumn . $row)->getValue() ?? '');
+                }
             }
         }
 
