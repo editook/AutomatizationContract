@@ -74,7 +74,7 @@ $itemsTable = is_array($currentTable) ? $currentTable : [];
 $cartonesTotal = 0;
 $total = 0.0;
 $cantidadTotal = 0;
-$gross_weightTotal = 0.0;
+$gross_weightTotal = null;
 
 foreach ($currentTable as $item) {
     if (!is_array($item)) {
@@ -91,9 +91,10 @@ foreach ($currentTable as $item) {
         $cantidadTotal += (int) $item['quantity'];
     }
     if (is_numeric($item['gross_weight'] ?? null)) {
-        $gross_weightTotal += (float) $item['gross_weight'];
+        $gross_weightTotal = ($gross_weightTotal ?? 0.0) + (float) $item['gross_weight'];
     }
 }
+$gross_weightTotal ??= 'N/D';
 $amountInWords = amountToEnglishWords((string)$total);
 
 if ($itemsTable !== [] && is_array($_SESSION['collection_data'] ?? null)) {
@@ -118,7 +119,7 @@ if ($itemsTable !== [] && is_array($_SESSION['collection_data'] ?? null)) {
             'gross_weightTotal' => [
                 'value' => $gross_weightTotal,
                 'name_show' => 'Peso Bruto Total',
-                'visible' => false,
+                'visible' => true,
             ],
             'amountInWords' => [
                 'value' => $amountInWords,
@@ -139,6 +140,7 @@ $editableItemFields = [
     'width' => 'Ancho',
     'heigth' => 'Alto',
     'hc_code' => 'HC Code(Codigo HC)',
+    'gross_weight' => 'Gross Weight',
 
 ];
 $fixedItemFields = [
@@ -146,7 +148,7 @@ $fixedItemFields = [
     'quantity' => 'Cantidad',
     'subtotal' => 'Subtotal',
     'cartons' => 'Cartones',
-    'gross_weight' => 'Gross Weight',
+    
 ];
 ?>
 <!DOCTYPE html>
@@ -200,7 +202,7 @@ $fixedItemFields = [
                             <img src="../assets/svg/excel.svg" class="h-7 w-7" alt="">
                             <span>Archivo Orden (.xls)</span>
                         </label>
-                        <input type="file" name="mspi_file" accept=".xls,.xlsx" required
+                        <input type="file" name="orden_file" accept=".xls,.xlsx" required
                             class="block w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-900 file:text-blue-200 hover:file:bg-blue-800">
                     </div>
                     
@@ -319,7 +321,7 @@ $fixedItemFields = [
                     <?php endforeach; ?>
                 </div>
                 <div class="flex justify-between pt-6">
-                    <a href="main.php?step=upload" class="text-blue-400 hover:underline">Volver a cargar</a>
+                    <a href="main_orden.php?step=upload" class="text-blue-400 hover:underline">Volver a cargar</a>
                     <button type="submit" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded-lg transition duration-300">
                         Confirmar
                     </button>

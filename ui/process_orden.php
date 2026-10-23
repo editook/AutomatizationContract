@@ -3,18 +3,25 @@ require '../vendor/autoload.php';
 include_once('../config/configs.php');
 session_start();
 
-use App\Models\ContractDataExtractor;
+use App\Models\ContractDataExtractorOrden;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $orden_file = $_FILES['orden_file']['tmp_name'] ?? null;
-    $invoice_file = $_FILES['invoice_file']['tmp_name'] ?? null;
+    $ordenUpload = $_FILES['orden_file'] ?? null;
+    $invoiceUpload = $_FILES['invoice_file'] ?? null;
+    $orden_file = $ordenUpload['tmp_name'] ?? null;
+    $invoice_file = $invoiceUpload['tmp_name'] ?? null;
 
-    if (!$mspi_file || !$packing_file || !$invoice_file) {
+    if (
+        !$orden_file
+        || !$invoice_file
+        || ($ordenUpload['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK
+        || ($invoiceUpload['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK
+    ) {
         die('Error: Faltan archivos');
     }
 
     try {
-        $extractor = new ContractDataExtractor();
+        $extractor = new ContractDataExtractorOrden();
         $extractedData = $extractor->extract($orden_file, $invoice_file);
 
         $_SESSION['collection_data'] = $extractedData['response'];
