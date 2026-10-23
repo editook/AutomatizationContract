@@ -236,7 +236,7 @@ class ContractDataExtractorOrden
                 'length' => $dimensions[0],
                 'width' => $dimensions[1],
                 'heigth' => $dimensions[2],
-                'gross_weight' => '',
+                'gross_weight' => '0',
             ];
         }
 

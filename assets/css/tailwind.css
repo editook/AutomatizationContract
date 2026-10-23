@@ -216,6 +216,9 @@
   .mx-auto {
     margin-inline: auto;
   }
+  .mt-1 {
+    margin-top: var(--spacing);
+  }
   .mt-2 {
     margin-top: calc(var(--spacing) * 2);
   }
@@ -254,9 +257,6 @@
   }
   .grid {
     display: grid;
-  }
-  .table {
-    display: table;
   }
   .h-7 {
     height: calc(var(--spacing) * 7);
@@ -629,9 +629,6 @@
     --tw-ring-color: var(--color-blue-500);
   }
   @media (width >= 48rem) {
-    .md\:grid-cols-2 {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
     .md\:grid-cols-3 {
       grid-template-columns: repeat(3, minmax(0, 1fr));
     }

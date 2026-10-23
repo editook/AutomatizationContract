@@ -5,6 +5,7 @@ require_once __DIR__ . '/../models/model_configuration.php';
 
 $step = $_GET['step'] ?? 'upload';
 $collection = $_SESSION['collection_data'] ?? [];
+unset($collection['3']); // Los totales se muestran en el resumen dedicado.
 $itemsTable = $_SESSION['collection_table'] ?? [];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && $step === 'review') {
@@ -36,6 +37,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $step === 'review') {
             $submittedValue = $submittedItems[$itemKey]['value'] ?? null;
             if (!is_scalar($submittedValue)) {
                 continue;
+            }
+
+            if ((string) $groupKey === '3' && $itemKey === 'total') {
+                $normalizedTotal = preg_replace('/[$,\s]/', '', (string) $submittedValue);
+                if (!is_string($normalizedTotal) || !preg_match('/^\d+(?:\.\d{1,2})?$/D', $normalizedTotal)) {
+                    continue;
+                }
+                $submittedValue = $normalizedTotal;
             }
 
             $currentField['value'] = (string) $submittedValue;
@@ -74,7 +83,7 @@ $itemsTable = is_array($currentTable) ? $currentTable : [];
 $cartonesTotal = 0;
 $total = 0.0;
 $cantidadTotal = 0;
-$gross_weightTotal = null;
+$gross_weightTotal = 0.0;
 
 foreach ($currentTable as $item) {
     if (!is_array($item)) {
@@ -91,43 +100,46 @@ foreach ($currentTable as $item) {
         $cantidadTotal += (int) $item['quantity'];
     }
     if (is_numeric($item['gross_weight'] ?? null)) {
-        $gross_weightTotal = ($gross_weightTotal ?? 0.0) + (float) $item['gross_weight'];
+        $gross_weightTotal = $gross_weightTotal + (float) $item['gross_weight'];
     }
 }
 $gross_weightTotal ??= 'N/D';
 $amountInWords = amountToEnglishWords((string)$total);
 
 if ($itemsTable !== [] && is_array($_SESSION['collection_data'] ?? null)) {
+    $summaryDefaults = [
+        'cartonesTotal' => ['value' => $cartonesTotal, 'name_show' => 'Total Cartones'],
+        'total' => ['value' => $total, 'name_show' => 'Total'],
+        'cantidadTotal' => ['value' => $cantidadTotal, 'name_show' => 'Cantidad Total'],
+        'gross_weightTotal' => ['value' => $gross_weightTotal, 'name_show' => 'Peso Bruto Total'],
+        'amountInWords' => ['value' => $amountInWords, 'name_show' => 'Monto en Texto'],
+    ];
+    $savedSummary = $_SESSION['collection_data']['3']['items'] ?? [];
+    $summaryFields = [];
+
+    foreach ($summaryDefaults as $key => $default) {
+        $savedField = $savedSummary[$key] ?? [];
+        $summaryFields[$key] = [
+            'value' => is_array($savedField) && array_key_exists('value', $savedField)
+                ? $savedField['value']
+                : $default['value'],
+            'name_show' => $default['name_show'],
+            'visible' => is_array($savedField) ? (bool) ($savedField['visible'] ?? true) : true,
+        ];
+    }
+
     $_SESSION['collection_data']['3'] = [
         'titulo' => '',
-        'items' => [
-            'cartonesTotal' => [
-                'value' => $cartonesTotal,
-                'name_show' => 'Total Cartones',
-                'visible' => false,
-            ],
-            'total' => [
-                'value' => $total,
-                'name_show' => 'Total',
-                'visible' => false,
-            ],
-            'cantidadTotal' => [
-                'value' => $cantidadTotal,
-                'name_show' => 'Cantidad Total',
-                'visible' => false,
-            ],
-            'gross_weightTotal' => [
-                'value' => $gross_weightTotal,
-                'name_show' => 'Peso Bruto Total',
-                'visible' => true,
-            ],
-            'amountInWords' => [
-                'value' => $amountInWords,
-                'name_show' => 'Monto en Texto',
-                'visible' => false,
-            ],
-        ],
+        'items' => $summaryFields,
     ];
+
+    $cartonesTotal = $summaryFields['cartonesTotal']['value'];
+    $total = $summaryFields['total']['value'];
+    $cantidadTotal = $summaryFields['cantidadTotal']['value'];
+    $gross_weightTotal = $summaryFields['gross_weightTotal']['value'];
+    $amountInWords = $summaryFields['amountInWords']['value'];
+} else {
+    $summaryFields = [];
 }
 
 $editableItemFields = [
@@ -231,7 +243,7 @@ $fixedItemFields = [
                                 <thead>
                                     <tr>
                                         <?php foreach (array_merge(['model' => 'Modelo'], $fixedItemFields, array_diff_key($editableItemFields, ['model' => true])) as $label): ?>
-                                            <th class="border border-gray-600 px-2 py-2 text-left text-gray-300"><?= htmlspecialchars($label, ENT_QUOTES, 'UTF-8') ?></th>
+                                            <th class="border border-gray-600 px-2 py-2 text-left text-gray-300"><?= htmlspecialchars($label) ?></th>
                                         <?php endforeach; ?>
                                     </tr>
                                 </thead>
@@ -240,14 +252,14 @@ $fixedItemFields = [
                                         <?php if (!is_array($item)) continue; ?>
                                         <tr>
                                             <td class="border border-gray-600 px-2 py-2">
-                                                <input type="text" name="collection_table[<?= (int) $itemIndex ?>][model]" value="<?= htmlspecialchars((string) ($item['model'] ?? ''), ENT_QUOTES, 'UTF-8') ?>" class="bg-gray-700 border border-gray-600 text-white p-2 rounded w-full">
+                                                <input type="text" name="collection_table[<?= (int) $itemIndex ?>][model]" value="<?= htmlspecialchars( ($item['model'] ?? '')) ?>" class="bg-gray-700 border border-gray-600 text-white p-2 rounded w-full">
                                             </td>
                                             <?php foreach ($fixedItemFields as $fieldName => $label): ?>
-                                                <td class="border border-gray-600 px-2 py-2 text-gray-200"><?= htmlspecialchars((string) ($item[$fieldName] ?? ''), ENT_QUOTES, 'UTF-8') ?></td>
+                                                <td class="border border-gray-600 px-2 py-2 text-gray-200"><?= htmlspecialchars( ($item[$fieldName] ?? '')) ?></td>
                                             <?php endforeach; ?>
                                             <?php foreach (array_diff_key($editableItemFields, ['model' => true]) as $fieldName => $label): ?>
                                                 <td class="border border-gray-600 px-2 py-2">
-                                                    <input type="text" name="collection_table[<?= (int) $itemIndex ?>][<?= htmlspecialchars($fieldName, ENT_QUOTES, 'UTF-8') ?>]" value="<?= htmlspecialchars((string) ($item[$fieldName] ?? ''), ENT_QUOTES, 'UTF-8') ?>" class="bg-gray-700 border border-gray-600 text-white p-2 rounded w-full">
+                                                    <input type="text" name="collection_table[<?= (int) $itemIndex ?>][<?= htmlspecialchars($fieldName) ?>]" value="<?= htmlspecialchars( ($item[$fieldName] ?? '')) ?>" class="bg-gray-700 border border-gray-600 text-white p-2 rounded w-full">
                                                 </td>
                                             <?php endforeach; ?>
                                         </tr>
@@ -258,25 +270,35 @@ $fixedItemFields = [
                         <div class="summary-grid">
                             <div class="rounded border border-gray-700 bg-gray-900 p-2">
                                 <span class="block text-xs font-bold text-gray-400 uppercase">Cartones</span>
-                                <span class="text-xs font-bold text-white"><?= $cartonesTotal ?></span>
+                                
+                                    <input type="text" <?= $summaryFields['cartonesTotal']['visible']?'':'disabled' ?>  name="collection_data[3][items][cartonesTotal][value]" value="<?= htmlspecialchars( $cartonesTotal) ?>" class="mt-1 w-full rounded border border-gray-600 bg-gray-900 p-2 text-xs font-bold text-white">
+                               
                             </div>
                             <div class="rounded border border-gray-700 bg-gray-900 p-2">
                                 <span class="block text-xs font-bold text-gray-400 uppercase">Total</span>
-                                <span class="text-xs font-bold text-white"><?= number_format($total, 2, '.', ',') ?></span>
+                                
+                                    <input type="text" <?= $summaryFields['total']['visible']?'':'disabled' ?>  name="collection_data[3][items][total][value]" value="<?= htmlspecialchars(number_format((float) $total, 2, '.', ',')) ?>" class="mt-1 w-full rounded border border-gray-600 bg-gray-900 p-2 text-xs font-bold text-white">
+                                
                             </div>
                             <div class="rounded border border-gray-700 bg-gray-900 p-2">
                                 <span class="block text-xs font-bold text-gray-400 uppercase">Cantidad</span>
-                                <span class="text-xs font-bold text-white"><?= $cantidadTotal ?></span>
+                                
+                                    <input type="text" <?= $summaryFields['cantidadTotal']['visible']?'':'disabled' ?> name="collection_data[3][items][cantidadTotal][value]" value="<?= htmlspecialchars( $cantidadTotal) ?>" class="mt-1 w-full rounded border border-gray-600 bg-gray-900 p-2 text-xs font-bold text-white">
+                               
                             </div>
                             <div class="rounded border border-gray-700 bg-gray-900 p-2">
                                 <span class="block text-xs font-bold text-gray-400 uppercase">Peso Total</span>
-                                <span class="text-xs font-bold text-white"><?= $gross_weightTotal ?> kg</span>
+                                
+                                    <input type="text" <?= $summaryFields['gross_weightTotal']['visible']?'':'disabled' ?>  name="collection_data[3][items][gross_weightTotal][value]" value="<?= htmlspecialchars( $gross_weightTotal) ?>" class="mt-1 w-full rounded border border-gray-600 bg-gray-900 p-2 text-xs font-bold text-white">
+                                  
                             </div>
 
                         </div>
                         <div class="rounded border border-gray-700 bg-gray-900 p-2">
                             <span class="block text-xs font-bold text-gray-400 uppercase">Monto en Literal</span>
-                            <span class="text-xs font-bold text-white"><?= $amountInWords ?> </span>
+                            
+                                <input type="text" <?= $summaryFields['amountInWords']['visible']?'':'disabled' ?>  name="collection_data[3][items][amountInWords][value]" value="<?= htmlspecialchars( $amountInWords) ?>" class="mt-1 w-full rounded border border-gray-600 bg-gray-900 p-2 text-xs font-bold text-white">
+                            
                         </div>
                     </section>
                 <?php endif; ?>
@@ -295,7 +317,7 @@ $fixedItemFields = [
                         ?>
                         <section class="space-y-3 border border-gray-700 p-2">
                             <?php if ($groupTitle !== ''): ?>
-                                <h3 class="text-lg font-semibold text-yellow-500"><?= htmlspecialchars((string) $groupTitle, ENT_QUOTES, 'UTF-8') ?></h3>
+                                <h3 class="text-lg font-semibold text-yellow-500"><?= htmlspecialchars( $groupTitle) ?></h3>
                             <?php endif; ?>
 
                             <?php foreach ($items as $key => $field): ?>
@@ -312,8 +334,8 @@ $fixedItemFields = [
                                 $fieldLabel = $field['name_show'] ?? str_replace('_', ' ', (string) $key);
                                 ?>
                                 <div class="flex flex-col space-y-1">
-                                    <label class="text-xs font-bold text-gray-400 uppercase"><?= htmlspecialchars((string) $fieldLabel, ENT_QUOTES, 'UTF-8') ?></label>
-                                    <input type="text" name="collection_data[<?= htmlspecialchars((string) $groupKey, ENT_QUOTES, 'UTF-8') ?>][items][<?= htmlspecialchars((string) $key, ENT_QUOTES, 'UTF-8') ?>][value]" value="<?= htmlspecialchars((string) $fieldValue, ENT_QUOTES, 'UTF-8') ?>"
+                                    <label class="text-xs font-bold text-gray-400 uppercase"><?= htmlspecialchars( $fieldLabel) ?></label>
+                                    <input type="text" name="collection_data[<?= htmlspecialchars( $groupKey) ?>][items][<?= htmlspecialchars( $key) ?>][value]" value="<?= htmlspecialchars( $fieldValue) ?>"
                                         class="bg-gray-700 border border-gray-600 text-white p-2 rounded focus:ring-2 focus:ring-blue-500 outline-none">
                                 </div>
                             <?php endforeach; ?>
