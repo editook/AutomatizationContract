@@ -8,9 +8,8 @@ if (isset($_POST['user']) && isset($_POST['password'])) {
 		$_SESSION['REST_id_user']   = '1';
 		$_SESSION['REST_type_user'] = 'ADMINISTRADOR';
 		$_SESSION['REST_name_user'] = $_POST['user'];
-		if ($_SESSION['REST_type_user'] == 'ADMINISTRADOR') {
-			header("Location: " . LOCALHOST . "/ui/main.php");
-		}
+		header("Location: " . LOCALHOST . "/ui/select_contract.php");
+		exit;
 	}
 }
 ?>

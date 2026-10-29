@@ -1,9 +1,11 @@
 <?php
 
 include_once('config/configs.php');
-include_once('config/session_manager.php');
+session_start();
 
-if ($_SESSION['REST_type_user'] == 'Administrador' || $_SESSION['REST_type_user'] == 'CLIENTE')
-    header("Location: " . LOCALHOST . "/ui/main.php");
-else
+if (isset($_SESSION['REST_id_user'])) {
+    header("Location: " . LOCALHOST . "/ui/select_contract.php");
+} else {
     header('Location: ' . LOCALHOST . '/signin.php');
+}
+exit;
