@@ -229,7 +229,7 @@ $pageRender = [
                                         </tr>
                                         <tr>
                                             <td class="border border-black pl-1"><strong>Buyer:</strong> <span class="font-normal highlight"><?= $data['customer_name'] ?></span></td>
-                                            <td class="border border-black pl-1"><strong>Seller:</strong> <span class="font-normal highlight"><?= $data['header'] ?></span></td>
+                                            <td class="border border-black pl-1"><strong>Seller:</strong> <span class="font-normal highlight"><?= $data['header'] ?> <?= $data['header2'] ?></span></td>
                                         </tr>
                                         <tr>
                                             <td class="border border-black pl-1"><strong>Address:</strong> <span class="font-normal highlight"><?= $data['customer_address'] ?></span></td>

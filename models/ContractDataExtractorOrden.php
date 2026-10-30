@@ -14,7 +14,7 @@ class ContractDataExtractorOrden
         $ordenData = $this->parseOrden($ordenPath);
         $ordenItems = $this->getOrdenItems($ordenPath);
         $invoiceItems = $this->parseInvoice($invoicePath);
-        $inputItems = $this->getCreateItems(count($invoiceItems));
+        $inputItems = $this->getCreateItems(count($ordenItems));
         $itemsTable = $this->getItemsFormatOrdenArray($ordenItems, $invoiceItems, $inputItems);
 
         $buyer = [
@@ -28,6 +28,11 @@ class ContractDataExtractorOrden
 
         $seller = [
             'header' => ['value' => $ordenData['seller_name'], 'name_show' => 'Empresa', 'visible' => true],
+            'header2' => [
+                'value' => '',
+                'name_show' => 'Empresa(Adicional)',
+                'visible' => true,
+            ],
             'address' => ['value' => $ordenData['seller_address'], 'name_show' => 'Direccion', 'visible' => true],
             'contact' => ['value' => $ordenData['seller_contact'], 'name_show' => 'Informacion', 'visible' => true],
             'email' => ['value' => $ordenData['seller_email'], 'name_show' => 'Correo', 'visible' => true],
@@ -73,6 +78,10 @@ class ContractDataExtractorOrden
     }
     private function getItemsFormatOrdenArray(array $ordenItems, array $invoiceItems, array $inputItems): array
     {
+        if(count($ordenItems) !== count($invoiceItems)){
+            $invoiceItems = array_values(array_unique($invoiceItems));
+        }
+        
         if (count($ordenItems) !== count($invoiceItems)
             || count($ordenItems) !== count($inputItems)
         ) {

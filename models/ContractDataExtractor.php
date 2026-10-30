@@ -66,6 +66,11 @@ class ContractDataExtractor
                 'name_show' => 'Empresa',
                 'visible' => true,
             ],
+            'header2' => [
+                'value' => '',
+                'name_show' => 'Empresa(Adicional)',
+                'visible' => true,
+            ],
             'address' => [
                 'value' => 'Building 2, Smart Manufacturing Port, 370 Lianhai Road, Jianghai District, Jiangmen City, Guangdong Province',
                 'name_show' => 'Direccion',
