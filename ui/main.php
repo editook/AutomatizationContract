@@ -146,6 +146,7 @@ if ($itemsTable !== [] && is_array($_SESSION['collection_data'] ?? null)) {
 }
 
 $editableItemFields = [
+      'quantity' => 'Cantidad',
     'item_name' => 'Item Name(Nombre)',
     'model' => 'Model(Modelo)',
     'brand' => 'Brand(Marca)',
@@ -156,13 +157,15 @@ $editableItemFields = [
     'heigth' => 'Alto',
     'hc_code' => 'HC Code(Codigo HC)',
     'gross_weight' => 'Gross Weight',
+     'cartons' => 'Cartones',
+   
 
 ];
 $fixedItemFields = [
     'price' => 'Precio',
-    'quantity' => 'Cantidad',
+    
     'subtotal' => 'Subtotal',
-    'cartons' => 'Cartones',
+   
 ];
 ?>
 <!DOCTYPE html>

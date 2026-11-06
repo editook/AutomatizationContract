@@ -122,6 +122,8 @@ class ContractDataExtractor
     }
     private function getItemsFormatArray(array $mspiItems, array $packingItems, array $invoiceItems,array $inputItems): array
     {
+        $packingItems = $this->tryJoinItemsDuplicates($packingItems);
+
         if (
             count($mspiItems) !== count($packingItems)
             || count($mspiItems) !== count($invoiceItems)
@@ -162,11 +164,15 @@ class ContractDataExtractor
         $lastColumn = Coordinate::columnIndexFromString($sheet->getHighestDataColumn());
         $headerRow = null;
         $columns = [];
+        $productKeyColumn = null;
+        $quantityColumn = null;
 
         for ($row = 1; $row < $sheet->getHighestDataRow(); $row++) {
             $cartonsColumn = null;
             $dimensionColumns = [];
             $grossWeightColumn = null;
+            $rowProductKeyColumn = null;
+            $rowQuantityColumn = null;
 
             for ($column = 1; $column <= $lastColumn; $column++) {
                 $columnLetter = Coordinate::stringFromColumnIndex($column);
@@ -180,6 +186,12 @@ class ContractDataExtractor
 
                 if ($header === 'cartons') {
                     $cartonsColumn = $column;
+                }
+                if ($rowProductKeyColumn === null && preg_match('/product.*(?:code|cod)|factory\s*art|product description/i', $header)) {
+                    $rowProductKeyColumn = $column;
+                }
+                if ($rowQuantityColumn === null && str_contains($header, 'quantity')) {
+                    $rowQuantityColumn = $column;
                 }
                 if (in_array($normalizedDimension, ['length', 'width', 'height'], true)) {
                     $dimensionColumns[$normalizedDimension] = $column;
@@ -197,12 +209,21 @@ class ContractDataExtractor
                     'heigth' => $dimensionColumns['height'],
                     'gross_weight' => $grossWeightColumn,
                 ];
+                $productKeyColumn = $rowProductKeyColumn;
+                $quantityColumn = $rowQuantityColumn;
                 break;
             }
         }
 
         if ($headerRow === null) {
             throw new \RuntimeException('No se encontraron las columnas de items en el archivo de packing list.');
+        }
+
+        if ($productKeyColumn !== null) {
+            $columns['product_key'] = $productKeyColumn;
+        }
+        if ($quantityColumn !== null) {
+            $columns['quantity'] = $quantityColumn;
         }
 
         $items = [];
@@ -224,17 +245,58 @@ class ContractDataExtractor
             }
 
             $cartons = (float) $values['cartons'];
-            $items[] = [
+            $item = [
                 'cartons' => floor($cartons) === $cartons ? (int) $cartons : $cartons,
                 'length' => (int) (round((float) $values['length']))*10,
                 'width' => (int) (round((float) $values['width']))*10,
                 'heigth' => (int) (round((float) $values['heigth']))*10,
                 'gross_weight' => (float) $values['gross_weight'],
             ];
+
+            $productKey = strtolower($this->clean($values['product_key'] ?? ''));
+            if ($productKey !== '') {
+                $item['product_key'] = $productKey;
+            }
+            if (is_numeric($values['quantity'] ?? null)) {
+                $quantity = (float) $values['quantity'];
+                $item['quantity'] = floor($quantity) === $quantity ? (int) $quantity : $quantity;
+            }
+            $items[] = $item;
         }
 
         return $items;
     }
+
+    private function tryJoinItemsDuplicates(array $items): array
+    {
+        $joinedItems = [];
+        $itemIndexes = [];
+
+        foreach ($items as $item) {
+            $productKey = strtolower($this->clean($item['product_key'] ?? ''));
+            if ($productKey === '' || !array_key_exists($productKey, $itemIndexes)) {
+                if ($productKey !== '') {
+                    $itemIndexes[$productKey] = count($joinedItems);
+                }
+                $joinedItems[] = $item;
+                continue;
+            }
+
+            $joinedIndex = $itemIndexes[$productKey];
+            foreach (['quantity', 'cartons', 'gross_weight'] as $field) {
+                if (isset($joinedItems[$joinedIndex][$field], $item[$field])
+                    && is_numeric($joinedItems[$joinedIndex][$field])
+                    && is_numeric($item[$field])
+                ) {
+                    $sum = (float) $joinedItems[$joinedIndex][$field] + (float) $item[$field];
+                    $joinedItems[$joinedIndex][$field] = floor($sum) === $sum ? (int) $sum : $sum;
+                }
+            }
+        }
+
+        return array_values($joinedItems);
+    }
+
     private function getMspiItems(string $path): array
     {
         $spreadsheet = IOFactory::load($path);
